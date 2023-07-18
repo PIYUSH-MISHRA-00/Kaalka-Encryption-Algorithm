@@ -29,7 +29,7 @@
 #  then f' == Secant
 #  elseif(second >= 271 && second <= 360)
 #  then f' == Cotangent
-# to form cipher_final = [f'(second)+(header),f'(second)+(cipher)]
+# to form cipher_final = [f'(second) + (header), f'(second) + (cipher)]
 
 # Step - 6 Store the value of request timestamp and encrypt the message with request timestamp's second value at the native system ready for communication
 # where the f' will be calculated same as
@@ -42,11 +42,11 @@
 #  elseif(second >= 271 && second <= 360)
 #  then f' == Cotangent
 
-# To form cipher_request = [f'(request_second)+(header),f'(request_second)+(cipher)]
+# To form cipher_request = [f'(request_second) + (header), f'(request_second) + (cipher)]
 
 # Step - 7  Extract the request second value from the cipher_request and store the value in a variable
 
-# Step - 8 Store the value of response timestamp and encrypt with response timestamp's second value at the native system ready for communication
+# Step - 8 Store the value of response timestamp, request timestamp and encrypt with request timestamp's second value at the native system ready for communication
 # where the f' will be calculated same as
 #  if(second >= 0 && second <= 90)
 #  then f' == Cosec
@@ -57,8 +57,8 @@
 #  elseif(second >= 271 && second <= 360)
 #  then f' == Cotangent
 
-# To form cipher_response = f'[f(response_second)+(header), f(request_second), f(response_second) + (response)]
+# To form cipher_response = [f'[f(response_second) + (header), f(request_timestamp), f(response_second) + ASCII(response)]]
 
-# Validate the header timestamp values at the time of devlievery to the systems for validation
+# Validate the header timestamp values at the time of devlievery to the systems for validation purpose.
 
 ## Note that all the conversion will take place with help of abs function for the absolute value
