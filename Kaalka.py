@@ -172,4 +172,86 @@ if __name__ == "__main__":
     print("Encrypted Message:", encrypted_message)
 
 """
+# Structured Kalka with encryption and decryption
+"""
+from __future__ import annotations
+import time
+import typing
+import math
+
+class Kaalka:
+    def __init__(self) -> None:
+        pass
+
+    def encrypt(self, data: str) -> str:
+        timestamp = time.time()
+        second = int(timestamp % 60)
+        encrypted_message = self._encrypt_message(data, second)
+        return encrypted_message
+    
+    def decrypt(self, encrypted_message: str) -> str:
+        timestamp = time.time()
+        second = int(timestamp % 60)
+        decrypted_message = self._decrypt_message(encrypted_message, second)
+        return decrypted_message
+
+    def _encrypt_message(self, data: str, second: int) -> str:
+        ascii_values = [ord(char) for char in data]
+        encrypted_values = [self._apply_trigonometric_function(val, second) for val in ascii_values]
+        encrypted_message = "".join(chr(val) for val in encrypted_values)
+        return encrypted_message
+    
+    def _decrypt_message(self, encrypted_message: str, second: int) -> str:
+        rev_ascii = [ord(char) for char in encrypted_message]
+        decrypted_values = [self._apply_inverse_function(val, second) for val in rev_ascii]
+        decrypted_message = "".join(chr(val) for val in decrypted_values)
+        return decrypted_message
+
+    def _apply_trigonometric_function(self, value: int, second: int) -> int:
+        quadrant = self._determine_quadrant(second)
+        if quadrant == 1:
+            return round(value + math.sin(second))
+        elif quadrant == 2:
+            return round(value + 1 / math.tan(second))
+        elif quadrant == 3:
+            return round(value + math.cos(second))
+        elif quadrant == 4:
+            return round(value + math.tan(second))
+        else:
+            return value  # In case of an invalid quadrant, do not modify the value.
+        
+    def _apply_inverse_function(self, value: int, second: int) -> int:
+        quadrant = self._determine_quadrant(second)
+        if quadrant == 1:
+            return round(value - math.sin(second))
+        elif quadrant == 2:
+            return round(value - 1 / math.tan(second))
+        elif quadrant == 3:
+            return round(value - math.cos(second))
+        elif quadrant == 4:
+            return round(value - math.tan(second))
+        else:
+            return value  # In case of an invalid quadrant, do not modify the value.
+
+    def _determine_quadrant(self, second: int) -> int:
+        if 0 <= second <= 15:
+            return 1
+        elif 16 <= second <= 30:
+            return 2
+        elif 31 <= second <= 45:
+            return 3
+        else:
+            return 4
+
+
+# Test the Kaalka encryption algorithm
+if __name__ == "__main__":
+    kaalka = Kaalka()
+    message = "Hello, world!"
+    print("Original Message:", message)
+    encrypted_message = kaalka.encrypt(message)
+    print("Encrypted Message:", encrypted_message)
+    decrypted_message = kaalka.decrypt(encrypted_message)
+    print("Decrypted Message:", decrypted_message)
+"""
 
