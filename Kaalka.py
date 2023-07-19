@@ -33,3 +33,39 @@
 
 ## Note that all the conversion will take place with help of abs function for the absolute value
 
+# Boilerplate code using the standard python cryptography library performing symmetric encryption AES
+"""
+from cryptography.fernet import Fernet
+import time
+
+# Step 1: First store the timestamp of the message generated in a variable
+timestamp = time.time()
+
+# Step 2: Extract the value of second from the timestamp and convert them into radians.
+second = int(timestamp % 60)
+second_radians = second * (3.14159265359 / 180)
+
+# Step 3: Conversion of the individual characters of the message into ASCII value and storing them into an array
+message = "Hello, world!"
+ascii_values = [ord(char) for char in message]
+
+# Step 4: Add the value of f(second) to each character of the array based on second's value
+# For simplicity, let's assume f(second) is a simple function that increments ASCII values
+def f(value):
+    return value + second
+
+encrypted_message = [f(char) for char in ascii_values]
+
+# Encrypt and decrypt the message using a symmetric encryption algorithm (AES) from the cryptography library
+key = Fernet.generate_key()
+cipher_suite = Fernet(key)
+cipher_text = cipher_suite.encrypt(bytes(encrypted_message))
+decrypted_message = cipher_suite.decrypt(cipher_text)
+
+# Print the results
+print("Original Message:", message)
+print("Encrypted Cipher Text:", cipher_text)
+print("Decrypted Message:", decrypted_message.decode())
+
+"""
+
