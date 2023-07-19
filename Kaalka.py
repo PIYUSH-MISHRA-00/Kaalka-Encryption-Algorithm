@@ -49,8 +49,9 @@ second_radians = second * (3.14159265359 / 180)
 message = "Hello, world!"
 ascii_values = [ord(char) for char in message]
 
-# Step 4: Add the value of f(second) to each character of the array based on second's value
+# Step 4: Add the value of f(second) to each character of the array based on second's value where f is decided will be decided first
 # For simplicity, let's assume f(second) is a simple function that increments ASCII values
+
 def f(value):
     return value + second
 
@@ -68,4 +69,49 @@ print("Encrypted Cipher Text:", cipher_text)
 print("Decrypted Message:", decrypted_message.decode())
 
 """
+"""
+from cryptography.fernet import Fernet
+import time
+import math
 
+# Step 1: First store the timestamp of the message generated in a variable
+timestamp = time.time()
+
+# Step 2: Extract the value of second from the timestamp and convert them into radians.
+second = int(timestamp % 60)
+second_radians = second * (math.pi / 30)  # Since there are 60 seconds in a minute and 2*pi radians in a circle
+
+# Step 3: Conversion of the individual characters of the message into ASCII value and storing them into an array
+message = "Hello, world!"
+ascii_values = [ord(char) for char in message]
+
+# Step 4: Add the value of f(second) to each character of the array based on second's value
+# For simplicity, let's assume f(second) is a simple function that increments ASCII values
+
+def f(value, second):
+    if 0 <= second <= 90:
+        return value + math.sin(second_radians)
+    elif 91 <= second <= 180:
+        return value + 1 / math.tan(second_radians)
+    elif 181 <= second <= 270:
+        return value + math.cos(second_radians)
+    elif 271 <= second <= 360:
+        return value + math.tan(second_radians)
+
+# Step 5: Applying the f function to each character of the array and creating the encrypted message
+encrypted_values = [f(char, second) for char in ascii_values]
+
+# Encrypt and decrypt the message using a symmetric encryption algorithm (Fernet) from the cryptography library
+key = Fernet.generate_key()
+cipher_suite = Fernet(key)
+cipher_text = cipher_suite.encrypt(bytes(encrypted_values))
+decrypted_values = cipher_suite.decrypt(cipher_text)
+
+# Converting decrypted bytes back to characters
+decrypted_message = ''.join(chr(int(round(x))) for x in decrypted_values)
+
+# Print the results
+print("Original Message:", message)
+print("Encrypted Cipher Text:", cipher_text)
+print("Decrypted Message:", decrypted_message)
+"""
