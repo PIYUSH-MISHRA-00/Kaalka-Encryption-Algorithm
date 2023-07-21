@@ -12,5 +12,5 @@ setup(
     author='PIYUSH-MISHRA-00',
     author_email='piyushmishra.professional@gmail.com',
     description='Kaalka encryption library',
-    url='https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm/tree/kaalka-package',
+    url='https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm/tree/kaalka-package/kaalka_package',
 )
