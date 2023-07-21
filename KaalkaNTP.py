@@ -364,3 +364,144 @@ if __name__ == "__main__":
     sender()
 
 """
+
+import socket
+import time
+import typing
+import math
+import ntplib
+
+class Kaalka:
+    def __init__(self) -> None:
+        self.second = 0
+        self._update_timestamp()
+
+    def _update_timestamp(self):
+        ntp_client = ntplib.NTPClient()
+        response = ntp_client.request('pool.ntp.org', version=4)
+        ntp_time = response.tx_time
+        self.second = abs(int(ntp_time % 60))
+
+    def encrypt(self, data: str) -> str:
+        encrypted_message = self._encrypt_message(data)
+        return encrypted_message
+    
+    def decrypt(self, encrypted_message: str) -> str:
+        decrypted_message = self._decrypt_message(encrypted_message)
+        return decrypted_message
+
+    def _encrypt_message(self, data: str) -> str:
+        ascii_values = [ord(char) for char in data]
+        encrypted_values = [self._apply_trigonometric_function(val) for val in ascii_values]
+        encrypted_message = "".join(chr(val) for val in encrypted_values)
+        return encrypted_message
+    
+    def _decrypt_message(self, encrypted_message: str) -> str:
+        rev_ascii = [ord(char) for char in encrypted_message]
+        decrypted_values = [self._apply_inverse_function(val) for val in rev_ascii]
+        decrypted_message = "".join(chr(val) for val in decrypted_values)
+        return decrypted_message
+
+    def _apply_trigonometric_function(self, value: int) -> int:
+        quadrant = self._determine_quadrant(self.second)
+        if quadrant == 1:
+            return round(value + math.sin(self.second))
+        elif quadrant == 2:
+            return round(value + 1 / math.tan(self.second))
+        elif quadrant == 3:
+            return round(value + math.cos(self.second))
+        elif quadrant == 4:
+            return round(value + math.tan(self.second))
+        else:
+            return value  # In case of an invalid quadrant, do not modify the value.
+        
+    def _apply_inverse_function(self, value: int) -> int:
+        quadrant = self._determine_quadrant(self.second)
+        if quadrant == 1:
+            return round(value - math.sin(self.second))
+        elif quadrant == 2:
+            return round(value - 1 / math.tan(self.second))
+        elif quadrant == 3:
+            return round(value - math.cos(self.second))
+        elif quadrant == 4:
+            return round(value - math.tan(self.second))
+        else:
+            return value  # In case of an invalid quadrant, do not modify the value.
+
+    def _determine_quadrant(self, second: int) -> int:
+        if 0 <= second <= 15:
+            return 1
+        elif 16 <= second <= 30:
+            return 2
+        elif 31 <= second <= 45:
+            return 3
+        else:
+            return 4
+
+class Packet:
+    def __init__(self, data: str) -> None:
+        self.data = data
+        self.encrypted_data = None
+
+    def encrypt(self, kaalka: Kaalka) -> None:
+        if not self.encrypted_data:
+            encrypted_message = kaalka.encrypt(self.data)
+            self.encrypted_data = encrypted_message
+
+    def decrypt(self, kaalka: Kaalka) -> None:
+        if self.encrypted_data:
+            decrypted_message = kaalka.decrypt(self.encrypted_data)
+            self.data = decrypted_message
+            self.encrypted_data = None
+
+def sender():
+    # Simulate sender preparing data
+    message = "Hello, Kaalka!"
+    print("Original Message:", message)
+
+    # Create a packet with the message
+    packet = Packet(message)
+
+    # Encrypt the packet using Kaalka algorithm
+    kaalka = Kaalka()
+    packet.encrypt(kaalka)
+    print("Encrypted Data:", packet.encrypted_data)
+
+    # Simulate sending the encrypted data over the network
+    send_data_over_network(packet.encrypted_data)
+
+def receiver():
+    # Simulate receiving the encrypted data over the network
+    received_data = receive_data_over_network()
+
+    # Create a packet with the received data
+    packet = Packet(received_data)
+
+    # Decrypt the packet using Kaalka algorithm
+    kaalka = Kaalka()
+    packet.decrypt(kaalka)
+    print("Decrypted Message:", packet.data)
+
+def send_data_over_network(data):
+    # Simulate sending data over the network (e.g., using sockets)
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+        s.sendto(data.encode(), ('127.0.0.1', 12345))
+
+def receive_data_over_network():
+    # Simulate receiving data over the network (e.g., using sockets)
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+        s.bind(('127.0.0.1', 12345))
+        data, addr = s.recvfrom(1024)
+        return data.decode()
+
+if __name__ == "__main__":
+    # Start the receiver in a separate thread (simulating a different machine)
+    import threading
+    receiver_thread = threading.Thread(target=receiver)
+    receiver_thread.start()
+
+    # Give some time for the receiver to be ready
+    time.sleep(1)
+
+    # Start the sender (simulating another machine)
+    sender()
