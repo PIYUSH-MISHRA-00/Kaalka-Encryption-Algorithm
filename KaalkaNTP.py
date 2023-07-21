@@ -454,45 +454,45 @@ class Packet:
             self.data = decrypted_message
             self.encrypted_data = None
 
-def sender():
-    # Simulate sender preparing data
-    message = "Hello, Kaalka!"
-    print("Original Message:", message)
+    def sender():
+        # Simulate sender preparing data
+        message = "Hello, Kaalka!"
+        print("Original Message:", message)
 
-    # Create a packet with the message
-    packet = Packet(message)
+        # Create a packet with the message
+        packet = Packet(message)
 
-    # Encrypt the packet using Kaalka algorithm
-    kaalka = Kaalka()
-    packet.encrypt(kaalka)
-    print("Encrypted Data:", packet.encrypted_data)
+        # Encrypt the packet using Kaalka algorithm
+        kaalka = Kaalka()
+        packet.encrypt(kaalka)
+        print("Encrypted Data:", packet.encrypted_data)
 
-    # Simulate sending the encrypted data over the network
-    send_data_over_network(packet.encrypted_data)
+        # Simulate sending the encrypted data over the network
+        send_data_over_network(packet.encrypted_data)
 
-def receiver():
-    # Simulate receiving the encrypted data over the network
-    received_data = receive_data_over_network()
+    def receiver():
+        # Simulate receiving the encrypted data over the network
+        received_data = receive_data_over_network()
 
-    # Create a packet with the received data
-    packet = Packet(received_data)
+        # Create a packet with the received data
+        packet = Packet(received_data)
 
-    # Decrypt the packet using Kaalka algorithm
-    kaalka = Kaalka()
-    packet.decrypt(kaalka)
-    print("Decrypted Message:", packet.data)
+        # Decrypt the packet using Kaalka algorithm
+        kaalka = Kaalka()
+        packet.decrypt(kaalka)
+        print("Decrypted Message:", packet.data)
 
-def send_data_over_network(data):
-    # Simulate sending data over the network (e.g., using sockets)
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-        s.sendto(data.encode(), ('127.0.0.1', 12345))
+    def send_data_over_network(data):
+        # Simulate sending data over the network (e.g., using sockets)
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.sendto(data.encode(), ('127.0.0.1', 12345))
 
-def receive_data_over_network():
-    # Simulate receiving data over the network (e.g., using sockets)
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-        s.bind(('127.0.0.1', 12345))
-        data, addr = s.recvfrom(1024)
-        return data.decode()
+    def receive_data_over_network():
+        # Simulate receiving data over the network (e.g., using sockets)
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.bind(('127.0.0.1', 12345))
+            data, addr = s.recvfrom(1024)
+            return data.decode()
 
 if __name__ == "__main__":
     # Start the receiver in a separate thread (simulating a different machine)
