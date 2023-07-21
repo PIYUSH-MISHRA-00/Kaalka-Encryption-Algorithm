@@ -1,8 +1,8 @@
 Metadata-Version: 2.1
 Name: kaalka
-Version: 0.1
+Version: 1.0
 Summary: Kaalka encryption library
-Home-page: https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm/tree/kaalka-package/kaalka_package
+Home-page: https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm/tree/kaalka/kaalka
 Author: PIYUSH-MISHRA-00
 Author-email: piyushmishra.professional@gmail.com
 License-File: LICENSE
