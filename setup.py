@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='kaalka-package',
+    name='kaalka',
     version='0.1',
     packages=find_packages(),
     install_requires=[
