@@ -5,34 +5,25 @@
 * File Structure
 
 ```
-kaalka_package/
-|-- kaalkaNTP/
-|   |-- __init__.py
-|   |-- kaalkaNTP.py
-|   |-- packet.py
-|-- kaalka/
-|   |-- __init__.py
-|   |-- kaalka.py
-|-- setup.py
+kaalka/
+  ├── kaalka.js
+  ├── kaalkaNTP.js
+  ├── test/
+  │   ├── kaalka.test.js
+  │   ├── kaalkaNTP.test.js
+  ├── package.json
 
 ```
 # Exemplar Usage
 
 ```
-from kaalka import Kaalka
-from kaalkaNTP import KaalkaNTP
+const KaalkaNTP = require('your-library-name/kaalkaNTP');
+const Packet = require('your-library-name/packet');
 
-# Create an instance of Kaalka
-kaalka = Kaalka()
-message = "Hello, world!"
-encrypted_message = kaalka.encrypt(message)
-decrypted_message = kaalka.decrypt(encrypted_message)
+const kaalkaInstance = new KaalkaNTP();
+const packet = new Packet("Hello, Kaalka!");
+packet.encrypt(kaalkaInstance);
+console.log("Encrypted Data:", packet.encryptedData);
 
-print("Encrypted Message:", encrypted_message)
-print("Decrypted Message:", decrypted_message)
-
-# Create an instance of KaalkaNTP
-kaalka_ntp = KaalkaNTP()
-# Now you can use the methods of KaalkaNTP as well
 
 ```

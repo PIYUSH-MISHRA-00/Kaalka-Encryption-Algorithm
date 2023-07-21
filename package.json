@@ -1,0 +1,18 @@
+{
+  "name": "kaalka",
+  "version": "1.0.0",
+  "description": "Kaalka encryption based upon the Kaalka algorithm",
+  "main": "kaalka.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm.git"
+  },
+  "author": "PIYUSH-MISHRA-00",
+  "bugs": {
+    "url": "https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm/issues"
+  },
+  "homepage": "https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm#readme"
+}
