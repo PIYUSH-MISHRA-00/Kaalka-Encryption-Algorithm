@@ -3,7 +3,7 @@ name: Python Package CI
 on:
   push:
     branches:
-      - main
+      - kaalka
   pull_request:
 
 jobs:
