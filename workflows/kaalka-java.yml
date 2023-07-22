@@ -1,0 +1,34 @@
+name: Maven Build and Release
+
+on:
+  push:
+    branches:
+      - kaalka-java
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '1.8'
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      # Add more steps here for tests or other tasks
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: kaalka-lib.jar
+          tag_name: v1.0.0
+          release_name: Release 1.0.0
