@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>main.java.com.kaalka</groupId>
-    <artifactId>Kaalka-Encryption-Algorithm</artifactId>
+    <artifactId>Kaalka</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging> <!-- Specify the desired packaging type here -->
 
