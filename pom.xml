@@ -9,7 +9,13 @@
     <packaging>jar</packaging> <!-- Specify the desired packaging type here -->
 
     <!-- Other configuration elements and dependencies go here -->
-
+    <repositories>
+    <repository>
+    <id>oracle-public</id>
+    <url>https://maven.oracle.com/public</url>
+    </repository>
+    </repositories>
+    
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
