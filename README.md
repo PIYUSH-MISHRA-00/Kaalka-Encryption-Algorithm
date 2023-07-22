@@ -6,16 +6,23 @@
 
 ```
 kaalka
-├── src
-│   └── main
-│       └── java
-│           └── com
-│               └── kaalka
-│                   ├── Kaalka.java
-│                   ├── KaalkaNTP.java
-│                   └── Packet.java
-├── pom.xml
-└── README.md
+src/
+  ├── main/
+  │   ├── java/
+  │   │   └── com/
+  │   │       └── kaalka/
+  │   │           ├── Kaalka.java
+  │   │           ├── KaalkaNTP.java
+  │   │           └── Packet.java
+  └── test/
+      ├── java/
+      │   └── com/
+      │       └── kaalka/
+      │           ├── KaalkaTest.java
+      │           └── KaalkaNTPTest.java
+      │            
+      ├── pom.xml
+      └── README.md
 
 ```
 # Exemplar Usage
