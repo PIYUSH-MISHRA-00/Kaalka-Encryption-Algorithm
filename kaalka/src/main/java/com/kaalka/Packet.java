@@ -1,4 +1,7 @@
 package main.java.com.kaalka;
+
+import java.util.function.Function;
+
 public class Packet {
     private String data;
     private String encryptedData;
@@ -20,8 +23,7 @@ public class Packet {
     }
 
     public void decrypt(KaalkaNTP kaalkaNTP, Function<Integer, Integer> decryptionFunction) {
-        data = kaalkaNTP.encrypt(encryptedData, decryptionFunction);
+        data = kaalkaNTP.decrypt(encryptedData, decryptionFunction);
         encryptedData = null;
     }
 }
-

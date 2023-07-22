@@ -39,13 +39,13 @@ public class Kaalka {
         int quadrant = determineQuadrant(second);
         switch (quadrant) {
             case 1:
-                return Math.round(value + Math.sin(second));
+                return value + (int) Math.round(Math.sin(second));
             case 2:
-                return Math.round(value + 1 / Math.tan(second));
+                return value + (int) Math.round(1 / Math.tan(second));
             case 3:
-                return Math.round(value + Math.cos(second));
+                return value + (int) Math.round(Math.cos(second));
             case 4:
-                return Math.round(value + Math.tan(second));
+                return value + (int) Math.round(Math.tan(second));
             default:
                 return value; // In case of an invalid quadrant, do not modify the value.
         }
@@ -55,13 +55,13 @@ public class Kaalka {
         int quadrant = determineQuadrant(second);
         switch (quadrant) {
             case 1:
-                return Math.round(value - Math.sin(second));
+                return value - (int) Math.round(Math.sin(second));
             case 2:
-                return Math.round(value - 1 / Math.tan(second));
+                return value - (int) Math.round(1 / Math.tan(second));
             case 3:
-                return Math.round(value - Math.cos(second));
+                return value - (int) Math.round(Math.cos(second));
             case 4:
-                return Math.round(value - Math.tan(second));
+                return value - (int) Math.round(Math.tan(second));
             default:
                 return value; // In case of an invalid quadrant, do not modify the value.
         }
