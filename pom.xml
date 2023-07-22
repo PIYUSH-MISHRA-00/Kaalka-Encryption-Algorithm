@@ -13,7 +13,7 @@
     <repository>
         <id>kaalka</id>
         <name>Kaalka</name>
-        <url>https://maven.pkg.github.com/PIYUSH-MISHRA-00/Kaalika-Encryption-Algorithm//tree/kaalka-java</url>
+        <url>https://maven.pkg.github.com/PIYUSH-MISHRA-00/Kaalika-Encryption-Algorithm/tree/kaalka-java</url>
     </repository>
     </distributionManagement>
 
