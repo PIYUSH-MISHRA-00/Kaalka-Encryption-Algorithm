@@ -21,9 +21,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build the library (if needed)
-        run: npm run build # Modify this if you have a build script
-
       - name: Publish to npm
         run: npm publish --access public
         env:
