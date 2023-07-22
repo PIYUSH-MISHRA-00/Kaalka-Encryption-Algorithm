@@ -1,0 +1,17 @@
+plugins {
+    id 'java'
+}
+
+group 'main.java.com.kaalka'
+version '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'commons-net:commons-net:3.9.0' // Replace with the desired version of Commons Net
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
