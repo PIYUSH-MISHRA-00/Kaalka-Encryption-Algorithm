@@ -2,19 +2,10 @@
 
 * Based upon the Kaalka Encryption Algorithm
 
-* File Structure
+* To use into your project first run the following into the terminal
 
 ```
-kaalka_package/
-|-- kaalkaNTP/
-|   |-- __init__.py
-|   |-- kaalkaNTP.py
-|   |-- packet.py
-|-- kaalka/
-|   |-- __init__.py
-|   |-- kaalka.py
-|-- setup.py
-
+pip install kaalka
 ```
 # Exemplar Usage
 
