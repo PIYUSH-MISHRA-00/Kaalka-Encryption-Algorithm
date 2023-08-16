@@ -118,7 +118,7 @@ public class Main {
         // Example usage of Apache Commons Net
         TimeStamp ntpTime = TimeStamp.getCurrentTime();
         long secondsSince1900 = ntpTime.getSeconds();
-        System.out.println("\nCurrent NTP Time (seconds since 1900): " + secondsSince1900);
+        System.out.println("\nCurrent NTP Time (seconds since 1999): " + secondsSince1900);
     }
 }
 
