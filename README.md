@@ -15,16 +15,21 @@ from kaalkaNTP import KaalkaNTP
 
 # Create an instance of Kaalka
 kaalka = Kaalka()
-message = "Hello, world!"
-encrypted_message = kaalka.encrypt(message)
-decrypted_message = kaalka.decrypt(encrypted_message)
-
-print("Encrypted Message:", encrypted_message)
-print("Decrypted Message:", decrypted_message)
 
 # Create an instance of KaalkaNTP
 kaalka_ntp = KaalkaNTP()
-# Now you can use the methods of KaalkaNTP as well
+
+# Fetch the current timestamp using KaalkaNTP
+timestamp = kaalka_ntp.get_current_time()
+
+# Use the timestamp for encryption and decryption
+message = "Hello, world!"
+encrypted_message = kaalka.encrypt(message, timestamp)
+decrypted_message = kaalka.decrypt(encrypted_message, timestamp)
+
+print("Original Message:", message)
+print("Encrypted Message:", encrypted_message)
+print("Decrypted Message:", decrypted_message)
 
 ```
 
@@ -36,13 +41,43 @@ npm i kaalka
 ```
 # Exemplar Usage
 
-```
-const KaalkaNTP = require('your-library-name/kaalkaNTP');
-const Packet = require('your-library-name/packet');
+* Using kaalka for Encryption and Decryption: 
 
-const kaalkaInstance = new KaalkaNTP();
+```
+const Kaalka = require('kaalka');
+
+// Create an instance of Kaalka
+const kaalkaInstance = new Kaalka();
+
+const message = "Hello, world!";
+
+// Encrypt the message
+const encryptedMessage = kaalkaInstance.encrypt(message);
+
+// Decrypt the encrypted message
+const decryptedMessage = kaalkaInstance.decrypt(encryptedMessage);
+
+console.log("Original Message:", message);
+console.log("Encrypted Message:", encryptedMessage);
+console.log("Decrypted Message:", decryptedMessage);
+
+```
+* Using kaalka_NTP and Packet for Encryption:
+
+```
+const KaalkaNTP = require('kaalka_NTP'); // Replace with the actual import
+const Packet = require('packet'); // Replace with the actual import
+
+// Create an instance of KaalkaNTP
+const kaalkaNTPInstance = new KaalkaNTP();
+
+// Create a Packet object with some data
 const packet = new Packet("Hello, Kaalka!");
-packet.encrypt(kaalkaInstance);
+
+// Encrypt the packet using KaalkaNTP instance
+packet.encrypt(kaalkaNTPInstance);
+
+console.log("Original Data:", packet.originalData);
 console.log("Encrypted Data:", packet.encryptedData);
 
 ```
