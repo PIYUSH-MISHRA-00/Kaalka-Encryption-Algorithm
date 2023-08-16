@@ -2,17 +2,9 @@
 
 * Based upon the Kaalka Encryption Algorithm
 
-* File Structure
-
+* For using the node package for Kaalka just run the following into the terminal
 ```
-kaalka/
-  ├── kaalka.js
-  ├── kaalkaNTP.js
-  ├── test/
-  │   ├── kaalka.test.js
-  │   ├── kaalkaNTP.test.js
-  ├── package.json
-
+npm i kaalka
 ```
 # Exemplar Usage
 
