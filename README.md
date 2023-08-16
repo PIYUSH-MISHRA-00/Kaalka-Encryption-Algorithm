@@ -138,8 +138,8 @@ public class Main {
 
         // Example usage of Apache Commons Net
         TimeStamp ntpTime = TimeStamp.getCurrentTime();
-        long secondsSince1900 = ntpTime.getSeconds();
-        System.out.println("\nCurrent NTP Time (seconds since 1900): " + secondsSince1900);
+        long secondsSince1999 = ntpTime.getSeconds();
+        System.out.println("\nCurrent NTP Time (seconds since 1999): " + secondsSince1999);
 
         // Example usage of Packet sending and receiving
         Packet packet = new Packet(originalMessage);
