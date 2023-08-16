@@ -166,8 +166,14 @@ public class Main {
 ```
 # Kotlin
 
-* Use the jar into your project and then
+* Use the jar into your project
 
+```
+dependencies {
+    implementation(files("path/to/your/Kaalka-Encryption-Algorithm.jar"))
+}
+```
+* Then the exampler code
 ```
 import com.kaalkalib.Kaalka
 import com.kaalkalib.KaalkaNTP
