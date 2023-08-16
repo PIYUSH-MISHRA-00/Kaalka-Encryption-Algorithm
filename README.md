@@ -14,6 +14,7 @@ pip install kaalka
 ```
 from kaalka import Kaalka
 from kaalkaNTP import KaalkaNTP
+from packet import Packet
 
 # Create an instance of Kaalka
 kaalka = Kaalka()
@@ -32,6 +33,23 @@ decrypted_message = kaalka.decrypt(encrypted_message, timestamp)
 print("Original Message:", message)
 print("Encrypted Message:", encrypted_message)
 print("Decrypted Message:", decrypted_message)
+
+# Create a packet with the encrypted message
+packet = Packet(encrypted_message)
+
+# Simulate sending the packet over the network
+Packet.send_data_over_network(packet.encrypted_data)
+
+# Simulate receiving the packet over the network
+received_data = Packet.receive_data_over_network()
+
+# Create a packet with the received data
+received_packet = Packet(received_data)
+
+# Decrypt the received packet using Kaalka
+received_decrypted_message = kaalka.decrypt(received_packet.encrypted_data, timestamp)
+
+print("\nReceived and Decrypted Message:", received_decrypted_message)
 
 ```
 
@@ -93,6 +111,7 @@ console.log("Encrypted Data:", packet.encryptedData);
 ```
 import com.kaalka.Kaalka;
 import com.kaalka.KaalkaNTP;
+import com.kaalka.Packet;
 import org.apache.commons.net.ntp.TimeStamp;
 
 public class Main {
@@ -120,7 +139,27 @@ public class Main {
         // Example usage of Apache Commons Net
         TimeStamp ntpTime = TimeStamp.getCurrentTime();
         long secondsSince1900 = ntpTime.getSeconds();
-        System.out.println("\nCurrent NTP Time (seconds since 1999): " + secondsSince1999);
+        System.out.println("\nCurrent NTP Time (seconds since 1900): " + secondsSince1900);
+
+        // Example usage of Packet sending and receiving
+        Packet packet = new Packet(originalMessage);
+
+        // Encrypt the packet using KaalkaNTP
+        packet.encrypt(kaalkaNTP);
+        System.out.println("\nEncrypted Packet Data: " + packet.getEncryptedData());
+
+        // Simulate sending the encrypted packet over the network
+        Packet.sendDataOverNetwork(packet.getEncryptedData());
+
+        // Simulate receiving the encrypted packet over the network
+        String receivedData = Packet.receiveDataOverNetwork();
+
+        // Create a packet with the received data
+        Packet receivedPacket = new Packet(receivedData);
+
+        // Decrypt the received packet using KaalkaNTP
+        receivedPacket.decrypt(kaalkaNTP);
+        System.out.println("Received and Decrypted Packet Data: " + receivedPacket.getData());
     }
 }
 
