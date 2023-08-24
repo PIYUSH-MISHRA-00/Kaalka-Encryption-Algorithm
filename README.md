@@ -1,47 +1,41 @@
-# Kaalka Package
+# Kaalka Package for Dart
 
 * Based upon the Kaalka Encryption Algorithm
 
-
-# Exemplar Usage
+* Other developers can use your package by adding it as a dependency in their own Dart projects. They need to include the package name and version in their **pubspec.yaml** file:
 
 ```
-import 'package:Kaalka/kaalka.dart';
-import 'package:Kaalka/kaalka_ntp.dart';
-import 'package:Kaalka/packet.dart';
+dependencies:
+  kaalka: ^1.0.0
+```
 
-Future<void> main() async {
-  // Example usage of Kaalka
-  final kaalka = Kaalka();
-  final originalMessage = "Hello, Kaalka!";
-  final timestamp = DateTime.now(); // Get the current timestamp
-  final encryptedMessage = kaalka.encrypt(originalMessage, timestamp);
-  final decryptedMessage = kaalka.decrypt(encryptedMessage, timestamp);
+Importing and Using: Once the package is added as a dependency, developers can import and use its classes, functions, and widgets in their Dart code:
 
-  print("Original Message: $originalMessage");
-  print("Encrypted Message: $encryptedMessage");
-  print("Decrypted Message: $decryptedMessage");
+```
+import 'package:kaalka/kaalka.dart';
 
-  // Example usage of KaalkaNTP
-  final kaalkaNTP = KaalkaNTP();
-  final encryptedNTPMessage = kaalkaNTP.encrypt(originalMessage);
-  final decryptedNTPMessage = kaalkaNTP.decrypt(encryptedNTPMessage);
-
-  print("\nUsing KaalkaNTP:");
-  print("Original Message: $originalMessage");
-  print("Encrypted NTP Message: $encryptedNTPMessage");
-  print("Decrypted NTP Message: $decryptedNTPMessage");
-
-  // Example usage of Packet sending and receiving
-  Packet("Hello, Kaalka!");
-
-  // Simulate sending and receiving of encrypted data using Packet
-  Packet.sender();
-
-  // Wait for sender to complete before receiving
-  await Future.delayed(Duration(seconds: 2));
-  
-  Packet.receiver();
+void main() {
+  // Use classes, functions, or widgets from the kaalka package
+  // ...
 }
+```
+Using Widgets: If your package includes widgets, they can be used just like any other Flutter widgets in the user's UI code:
 
+```
+import 'package:flutter/material.dart';
+import 'package:kaalka/kaalka.dart';
+
+void main() {
+  runApp(MyApp());
+}
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: MyCustomWidget(), // Use the widget from your package
+      ),
+    );
+  }
+}
 ```
