@@ -1,0 +1,14 @@
+
+name: Kaalka
+description: For encryption and decryption using Kaalka and KaalkaNTP.
+version: 1.0.0
+author: Piyush Mishra
+homepage: https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm/tree/Dart
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+dependencies:
+  ntp: ^2.0.0
+  flutter:
+    sdk: flutter
+dev_dependencies:
+  test: ^1.0.0

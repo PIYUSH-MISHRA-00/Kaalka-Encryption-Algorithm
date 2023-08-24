@@ -1,11 +1,3 @@
-# Kaalka Package
-
-* Based upon the Kaalka Encryption Algorithm
-
-
-# Exemplar Usage
-
-```
 import 'package:Kaalka/kaalka.dart';
 import 'package:Kaalka/kaalka_ntp.dart';
 import 'package:Kaalka/packet.dart';
@@ -43,5 +35,3 @@ Future<void> main() async {
   
   Packet.receiver();
 }
-
-```
