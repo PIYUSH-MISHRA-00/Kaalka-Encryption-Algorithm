@@ -1,4 +1,4 @@
-# Kaalka Package
+# Kaalka Package for Java
 
 * Based upon the Kaalka Encryption Algorithm
 
