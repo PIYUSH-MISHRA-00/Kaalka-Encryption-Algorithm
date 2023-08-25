@@ -2,18 +2,33 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion> <!-- Change modelVersion to 4.0.0 -->
     <groupId>main.java.com.kaalka</groupId>
-    <artifactId>Kaalka</artifactId>
+    <artifactId>kaalka</artifactId>
     <version>1.0.0</version>
-    <pack>jar</pack> <!-- Specify the desired packaging type here -->
+    <packaging>jar</packaging> <!-- Use "jar" packaging -->
 
-    <!-- Other configuration elements and dependencies go here -->
+    <name>Kaalka-Encryption-Algorithm</name> <!-- Add a meaningful name -->
+    <url>https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm</url> <!-- Add a URL to your project repository -->
+
+    <developers> <!-- Specify the developers of the project -->
+        <developer>
+            <id>PIYUSH-MISHRA-00</id>
+            <name>Piyush Mishra</name>
+            <email>piyushmishra.professional@gmail.com</email>
+        </developer>
+    </developers>
+
+    <scm> <!-- Specify source code management information -->
+        <url>https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm/tree/java</url>
+        <connection>scm:git:https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm.git</connection>
+        <developerConnection>scm:git:https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm.git</developerConnection>
+    </scm>
+
     <distributionManagement>
         <repository>
-            <id>github</id>
-            <name>Kaalka GitHub Package Repository</name>
-            <url>https://maven.pkg.github.com/PIYUSH-MISHRA-00/Kaalika-Encryption-Algorithm</url>
+            <id>central</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
 

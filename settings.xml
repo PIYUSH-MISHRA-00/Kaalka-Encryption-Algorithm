@@ -1,0 +1,5 @@
+<server>
+	<id>${server}</id>
+	<username></username>
+	<password></password>
+</server>
