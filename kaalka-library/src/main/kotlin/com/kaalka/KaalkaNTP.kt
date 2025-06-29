@@ -1,65 +1,79 @@
 import java.net.InetAddress
 import org.apache.commons.net.ntp.NTPUDPClient
 import org.apache.commons.net.ntp.TimeInfo
+import kotlin.math.*
+import java.time.LocalTime
 
-class KaalkaNTP {
-    private var second = 0
+open class Kaalka {
+    protected var h = 0
+    protected var m = 0
+    protected var s = 0
+
+    private fun updateTimestamp() {
+        val currentTime = LocalTime.now()
+        h = currentTime.hour
+        m = currentTime.minute
+        s = currentTime.second
+    }
 
     init {
         updateTimestamp()
     }
 
-    private fun updateTimestamp() {
+    protected fun encryptMessage(data: String): String {
+        val key = "$h$m$s"
+        val keyHash = key.hashCode()
+        return data.map { char ->
+            (char.toInt() + keyHash).toChar()
+        }.joinToString("")
+    }
+
+    protected fun decryptMessage(encryptedData: String): String {
+        val key = "$h$m$s"
+        val keyHash = key.hashCode()
+        return encryptedData.map { char ->
+            (char.toInt() - keyHash).toChar()
+        }.joinToString("")
+    }
+}
+
+class KaalkaNTP : Kaalka() {
+    private fun getNtpTime(): Triple<Int, Int, Int> {
         val ntpClient = NTPUDPClient()
         ntpClient.defaultTimeout = 10000
         val address = InetAddress.getByName("pool.ntp.org")
         val timeInfo: TimeInfo = ntpClient.getTime(address)
         val ntpTime = timeInfo.message.transmitTimeStamp.time / 1000
-        second = (ntpTime % 60).toInt()
+        val s = (ntpTime % 60).toInt()
+        val m = ((ntpTime / 60) % 60).toInt()
+        val h = ((ntpTime / 3600) % 24).toInt() % 12
+        return Triple(h, m, s)
     }
 
-    fun encrypt(data: String): String {
-        val encryptedValues = data.map { char ->
-            applyTrigonometricFunction(char.toInt())
-        }
-        return encryptedValues.joinToString("") { value -> value.toString() }
+    fun encrypt(data: String, timeKey: String? = null): String {
+        val (hh, mm, ss) = if (timeKey == null) getNtpTime() else parseTime(timeKey)
+        this.javaClass.superclass.getDeclaredField("h").apply { isAccessible = true }.setInt(this, hh)
+        this.javaClass.superclass.getDeclaredField("m").apply { isAccessible = true }.setInt(this, mm)
+        this.javaClass.superclass.getDeclaredField("s").apply { isAccessible = true }.setInt(this, ss)
+        val encryptMethod = this.javaClass.superclass.getDeclaredMethod("encryptMessage", String::class.java)
+        encryptMethod.isAccessible = true
+        return encryptMethod.invoke(this, data) as String
     }
 
-    fun decrypt(encryptedMessage: String): String {
-        val decryptedValues = encryptedMessage.chunked(2).map { chunk ->
-            applyInverseFunction(chunk.toInt())
-        }
-        return decryptedValues.joinToString("") { char -> char.toChar().toString() }
+    fun decrypt(encryptedMessage: String, timeKey: String? = null): String {
+        val (hh, mm, ss) = if (timeKey == null) getNtpTime() else parseTime(timeKey)
+        this.javaClass.superclass.getDeclaredField("h").apply { isAccessible = true }.setInt(this, hh)
+        this.javaClass.superclass.getDeclaredField("m").apply { isAccessible = true }.setInt(this, mm)
+        this.javaClass.superclass.getDeclaredField("s").apply { isAccessible = true }.setInt(this, ss)
+        val decryptMethod = this.javaClass.superclass.getDeclaredMethod("decryptMessage", String::class.java)
+        decryptMethod.isAccessible = true
+        return decryptMethod.invoke(this, encryptedMessage) as String
     }
 
-    private fun applyTrigonometricFunction(value: Int): Int {
-        val quadrant = determineQuadrant(second)
-        return when (quadrant) {
-            1 -> round(value + sin(second.toDouble())).toInt()
-            2 -> round(value + 1 / tan(second.toDouble())).toInt()
-            3 -> round(value + cos(second.toDouble())).toInt()
-            4 -> round(value + tan(second.toDouble())).toInt()
-            else -> value // In case of an invalid quadrant, do not modify the value.
-        }
-    }
-
-    private fun applyInverseFunction(value: Int): Int {
-        val quadrant = determineQuadrant(second)
-        return when (quadrant) {
-            1 -> round(value - sin(second.toDouble())).toInt()
-            2 -> round(value - 1 / tan(second.toDouble())).toInt()
-            3 -> round(value - cos(second.toDouble())).toInt()
-            4 -> round(value - tan(second.toDouble())).toInt()
-            else -> value // In case of an invalid quadrant, do not modify the value.
-        }
-    }
-
-    private fun determineQuadrant(second: Int): Int {
-        return when {
-            second in 0..15 -> 1
-            second in 16..30 -> 2
-            second in 31..45 -> 3
-            else -> 4
-        }
+    private fun parseTime(timeKey: String): Triple<Int, Int, Int> {
+        val hours = timeKey.substring(0, 2).toInt()
+        val minutes = timeKey.substring(2, 4).toInt()
+        val seconds = timeKey.substring(4, 6).toInt()
+        return Triple(hours, minutes, seconds)
     }
 }

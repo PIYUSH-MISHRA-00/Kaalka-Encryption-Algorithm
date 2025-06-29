@@ -1,59 +1,90 @@
 import kotlin.math.*
+import java.time.LocalTime
 
 class Kaalka {
-    private var second = 0
+    private var h: Int = 0
+    private var m: Int = 0
+    private var s: Int = 0
 
     init {
         updateTimestamp()
     }
 
     private fun updateTimestamp() {
-        val timestamp = System.currentTimeMillis() / 1000
-        second = (timestamp % 60).toInt()
+        val now = LocalTime.now()
+        h = now.hour % 12
+        m = now.minute
+        s = now.second
     }
 
-    fun encrypt(data: String): String {
-        val encryptedValues = data.map { char ->
-            applyTrigonometricFunction(char.toInt())
+    private fun parseTime(timeStr: String?): Triple<Int, Int, Int> {
+        if (timeStr == null) {
+            val now = LocalTime.now()
+            return Triple(now.hour % 12, now.minute, now.second)
         }
-        return encryptedValues.joinToString("") { value -> value.toString() }
-    }
-
-    fun decrypt(encryptedMessage: String): String {
-        val decryptedValues = encryptedMessage.chunked(2).map { chunk ->
-            applyInverseFunction(chunk.toInt())
+        val parts = timeStr.split(":")
+        return when (parts.size) {
+            3 -> Triple(parts[0].toInt() % 12, parts[1].toInt(), parts[2].toInt())
+            2 -> Triple(0, parts[0].toInt(), parts[1].toInt())
+            1 -> Triple(0, 0, parts[0].toInt())
+            else -> throw IllegalArgumentException("Invalid time format. Use HH:MM:SS, MM:SS, or SS.")
         }
-        return decryptedValues.joinToString("") { char -> char.toChar().toString() }
     }
 
-    private fun applyTrigonometricFunction(value: Int): Int {
-        val quadrant = determineQuadrant(second)
+    fun encrypt(data: String, timeKey: String? = null): String {
+        val (hh, mm, ss) = parseTime(timeKey)
+        h = hh; m = mm; s = ss
+        return encryptMessage(data)
+    }
+
+    fun decrypt(encryptedMessage: String, timeKey: String? = null): String {
+        val (hh, mm, ss) = parseTime(timeKey)
+        h = hh; m = mm; s = ss
+        return decryptMessage(encryptedMessage)
+    }
+
+    private fun getAngles(): Triple<Double, Double, Double> {
+        val hourAngle = (30 * h) + (0.5 * m) + (0.5 / 60 * s)
+        val minuteAngle = (6 * m) + (0.1 * s)
+        val secondAngle = 6 * s
+        val angleHm = min(abs(hourAngle - minuteAngle), 360 - abs(hourAngle - minuteAngle))
+        val angleMs = min(abs(minuteAngle - secondAngle), 360 - abs(minuteAngle - secondAngle))
+        val angleHs = min(abs(hourAngle - secondAngle), 360 - abs(hourAngle - secondAngle))
+        return Triple(angleHm, angleMs, angleHs)
+    }
+
+    private fun selectTrig(angle: Double): Double {
+        val quadrant = (angle / 90).toInt() + 1
         return when (quadrant) {
-            1 -> round(value + sin(second.toDouble())).toInt()
-            2 -> round(value + 1 / tan(second.toDouble())).toInt()
-            3 -> round(value + cos(second.toDouble())).toInt()
-            4 -> round(value + tan(second.toDouble())).toInt()
-            else -> value // In case of an invalid quadrant, do not modify the value.
+            1 -> sin(Math.toRadians(angle))
+            2 -> cos(Math.toRadians(angle))
+            3 -> tan(Math.toRadians(angle))
+            else -> {
+                val tanVal = tan(Math.toRadians(angle))
+                if (tanVal != 0.0) 1 / tanVal else 0.0
+            }
         }
     }
 
-    private fun applyInverseFunction(value: Int): Int {
-        val quadrant = determineQuadrant(second)
-        return when (quadrant) {
-            1 -> round(value - sin(second.toDouble())).toInt()
-            2 -> round(value - 1 / tan(second.toDouble())).toInt()
-            3 -> round(value - cos(second.toDouble())).toInt()
-            4 -> round(value - tan(second.toDouble())).toInt()
-            else -> value // In case of an invalid quadrant, do not modify the value.
+    private fun encryptMessage(data: String): String {
+        val (angleHm, angleMs, angleHs) = getAngles()
+        val encrypted = StringBuilder()
+        for ((idx, c) in data.withIndex()) {
+            val factor = (h + m + s + idx + 1).takeIf { it != 0 } ?: 1
+            val offset = (selectTrig(angleHm) + selectTrig(angleMs) + selectTrig(angleHs)) * factor + (idx + 1)
+            encrypted.append(((c.code + offset.roundToInt()) % 256).toChar())
         }
+        return encrypted.toString()
     }
 
-    private fun determineQuadrant(second: Int): Int {
-        return when {
-            second in 0..15 -> 1
-            second in 16..30 -> 2
-            second in 31..45 -> 3
-            else -> 4
+    private fun decryptMessage(encryptedMessage: String): String {
+        val (angleHm, angleMs, angleHs) = getAngles()
+        val decrypted = StringBuilder()
+        for ((idx, c) in encryptedMessage.withIndex()) {
+            val factor = (h + m + s + idx + 1).takeIf { it != 0 } ?: 1
+            val offset = (selectTrig(angleHm) + selectTrig(angleMs) + selectTrig(angleHs)) * factor + (idx + 1)
+            decrypted.append(((c.code - offset.roundToInt() + 256) % 256).toChar())
         }
+        return decrypted.toString()
     }
 }

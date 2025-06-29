@@ -1,6 +1,6 @@
-import com.example.Kaalka
-import com.example.KaalkaNTP
-import com.example.Packet
+import com.kaalka.Kaalka
+import com.kaalka.KaalkaNTP
+import com.kaalka.Packet
 
 fun main() {
     testKaalka()
@@ -11,8 +11,9 @@ fun main() {
 fun testKaalka() {
     val kaalka = Kaalka()
     val originalMessage = "Hello, Kaalka!"
-    val encryptedMessage = kaalka.encrypt(originalMessage)
-    val decryptedMessage = kaalka.decrypt(encryptedMessage)
+    val timestamp = "10:20:30" // Fixed timestamp for deterministic test
+    val encryptedMessage = kaalka.encrypt(originalMessage, timestamp)
+    val decryptedMessage = kaalka.decrypt(encryptedMessage, timestamp)
 
     println("Test Kaalka:")
     println("Original Message: $originalMessage")
@@ -23,8 +24,9 @@ fun testKaalka() {
 fun testKaalkaNTP() {
     val kaalkaNTP = KaalkaNTP()
     val originalMessage = "Hello, KaalkaNTP!"
-    val encryptedMessage = kaalkaNTP.encrypt(originalMessage)
-    val decryptedMessage = kaalkaNTP.decrypt(encryptedMessage)
+    val timestamp = "10:20:30" // Fixed timestamp for deterministic test
+    val encryptedMessage = kaalkaNTP.encrypt(originalMessage, timestamp)
+    val decryptedMessage = kaalkaNTP.decrypt(encryptedMessage, timestamp)
 
     println("Test KaalkaNTP:")
     println("Original Message: $originalMessage")

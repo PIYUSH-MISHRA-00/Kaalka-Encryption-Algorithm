@@ -6,8 +6,9 @@ fun main() {
     // Example usage of Kaalka
     val kaalka = Kaalka()
     val originalMessage = "Hello, Kaalka!"
-    val encryptedMessage = kaalka.encrypt(originalMessage)
-    val decryptedMessage = kaalka.decrypt(encryptedMessage)
+    val timestamp = "10:20:30" // Example fixed timestamp for deterministic test
+    val encryptedMessage = kaalka.encrypt(originalMessage, timestamp)
+    val decryptedMessage = kaalka.decrypt(encryptedMessage, timestamp)
 
     println("Original Message: $originalMessage")
     println("Encrypted Message: $encryptedMessage")
@@ -15,8 +16,8 @@ fun main() {
 
     // Example usage of KaalkaNTP
     val kaalkaNTP = KaalkaNTP()
-    val encryptedNTPMessage = kaalkaNTP.encrypt(originalMessage)
-    val decryptedNTPMessage = kaalkaNTP.decrypt(encryptedNTPMessage)
+    val encryptedNTPMessage = kaalkaNTP.encrypt(originalMessage, timestamp)
+    val decryptedNTPMessage = kaalkaNTP.decrypt(encryptedNTPMessage, timestamp)
 
     println("\nUsing KaalkaNTP:")
     println("Original Message: $originalMessage")
@@ -24,5 +25,5 @@ fun main() {
     println("Decrypted NTP Message: $decryptedNTPMessage")
 
     // Example usage of Packet sending and receiving
-    Packet.sendAndReceiveData()
+    Packet("Hello, Kaalka!").sendAndReceiveData()
 }
