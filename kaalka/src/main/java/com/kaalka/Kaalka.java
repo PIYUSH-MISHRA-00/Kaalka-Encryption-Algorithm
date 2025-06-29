@@ -1,81 +1,140 @@
 package main.java.com.kaalka;
 
+import java.util.Calendar;
+
 public class Kaalka {
-    private int second;
+    private int h = 0;
+    private int m = 0;
+    private int s = 0;
+
+    protected void setTimeFields(int h, int m, int s) {
+        this.h = h;
+        this.m = m;
+        this.s = s;
+    }
 
     public Kaalka() {
-        this.second = 0;
         updateTimestamp();
     }
 
     private void updateTimestamp() {
-        // You can use NTP or System.currentTimeMillis() to get the current time in milliseconds.
-        // For simplicity, we will use System.currentTimeMillis() in this example.
-        long timestamp = System.currentTimeMillis();
-        this.second = (int) ((timestamp / 1000) % 60);
+        Calendar now = Calendar.getInstance();
+        this.h = now.get(Calendar.HOUR_OF_DAY) % 12;
+        this.m = now.get(Calendar.MINUTE);
+        this.s = now.get(Calendar.SECOND);
+    }
+
+    private int[] parseTime(Object timeKey) {
+        int h = 0, m = 0, s = 0;
+        if (timeKey instanceof Integer) {
+            s = (Integer) timeKey;
+        } else if (timeKey instanceof String) {
+            String[] parts = ((String) timeKey).split(":");
+            if (parts.length == 3) {
+                h = Integer.parseInt(parts[0]) % 12;
+                m = Integer.parseInt(parts[1]);
+                s = Integer.parseInt(parts[2]);
+            } else if (parts.length == 2) {
+                m = Integer.parseInt(parts[0]);
+                s = Integer.parseInt(parts[1]);
+            } else if (parts.length == 1) {
+                s = Integer.parseInt(parts[0]);
+            } else {
+                throw new IllegalArgumentException("Invalid time format. Use HH:MM:SS, MM:SS, or SS.");
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid time format. Use HH:MM:SS, MM:SS, or SS.");
+        }
+        return new int[]{h, m, s};
     }
 
     public String encrypt(String data) {
-        StringBuilder encryptedMessage = new StringBuilder();
-        for (char c : data.toCharArray()) {
-            int asciiValue = (int) c;
-            int encryptedValue = applyTrigonometricFunction(asciiValue);
-            encryptedMessage.append((char) encryptedValue);
+        updateTimestamp();
+        return encrypt(data, null);
+    }
+
+    public String encrypt(String data, Object timeKey) {
+        if (timeKey != null) {
+            int[] t = parseTime(timeKey);
+            this.h = t[0];
+            this.m = t[1];
+            this.s = t[2];
+        } else {
+            updateTimestamp();
         }
-        return encryptedMessage.toString();
+        return encryptMessage(data);
     }
 
     public String decrypt(String encryptedMessage) {
-        StringBuilder decryptedMessage = new StringBuilder();
-        for (char c : encryptedMessage.toCharArray()) {
-            int encryptedValue = (int) c;
-            int decryptedValue = applyInverseFunction(encryptedValue);
-            decryptedMessage.append((char) decryptedValue);
-        }
-        return decryptedMessage.toString();
+        updateTimestamp();
+        return decrypt(encryptedMessage, null);
     }
 
-    private int applyTrigonometricFunction(int value) {
-        int quadrant = determineQuadrant(second);
-        switch (quadrant) {
-            case 1:
-                return value + (int) Math.round(Math.sin(second));
-            case 2:
-                return value + (int) Math.round(1 / Math.tan(second));
-            case 3:
-                return value + (int) Math.round(Math.cos(second));
-            case 4:
-                return value + (int) Math.round(Math.tan(second));
-            default:
-                return value; // In case of an invalid quadrant, do not modify the value.
-        }
-    }
-
-    private int applyInverseFunction(int value) {
-        int quadrant = determineQuadrant(second);
-        switch (quadrant) {
-            case 1:
-                return value - (int) Math.round(Math.sin(second));
-            case 2:
-                return value - (int) Math.round(1 / Math.tan(second));
-            case 3:
-                return value - (int) Math.round(Math.cos(second));
-            case 4:
-                return value - (int) Math.round(Math.tan(second));
-            default:
-                return value; // In case of an invalid quadrant, do not modify the value.
-        }
-    }
-
-    private int determineQuadrant(int second) {
-        if (0 <= second && second <= 15) {
-            return 1;
-        } else if (16 <= second && second <= 30) {
-            return 2;
-        } else if (31 <= second && second <= 45) {
-            return 3;
+    public String decrypt(String encryptedMessage, Object timeKey) {
+        if (timeKey != null) {
+            int[] t = parseTime(timeKey);
+            this.h = t[0];
+            this.m = t[1];
+            this.s = t[2];
         } else {
-            return 4;
+            updateTimestamp();
         }
+        return decryptMessage(encryptedMessage);
+    }
+
+    private double[] getAngles() {
+        double hourAngle = (30 * h) + (0.5 * m) + (0.5 / 60 * s);
+        double minuteAngle = (6 * m) + (0.1 * s);
+        double secondAngle = 6 * s;
+        double angleHm = Math.min(Math.abs(hourAngle - minuteAngle), 360 - Math.abs(hourAngle - minuteAngle));
+        double angleMs = Math.min(Math.abs(minuteAngle - secondAngle), 360 - Math.abs(minuteAngle - secondAngle));
+        double angleHs = Math.min(Math.abs(hourAngle - secondAngle), 360 - Math.abs(hourAngle - secondAngle));
+        return new double[]{angleHm, angleMs, angleHs};
+    }
+
+    private double selectTrig(double angle) {
+        int quadrant = (int) (angle / 90) + 1;
+        double rad = Math.toRadians(angle);
+        switch (quadrant) {
+            case 1:
+                return Math.sin(rad);
+            case 2:
+                return Math.cos(rad);
+            case 3:
+                return Math.tan(rad);
+            default:
+                double tanVal = Math.tan(rad);
+                return tanVal != 0 ? 1.0 / tanVal : 0;
+        }
+    }
+
+    private String encryptMessage(String data) {
+        double[] angles = getAngles();
+        double angleHm = angles[0];
+        double angleMs = angles[1];
+        double angleHs = angles[2];
+        StringBuilder buffer = new StringBuilder();
+        for (int idx = 0; idx < data.length(); idx++) {
+            int c = data.charAt(idx);
+            int factor = (h + m + s + idx + 1) == 0 ? 1 : (h + m + s + idx + 1);
+            double offset = (selectTrig(angleHm) + selectTrig(angleMs) + selectTrig(angleHs)) * factor + (idx + 1);
+            buffer.append((char) ((c + Math.round(offset)) % 256));
+        }
+        return buffer.toString();
+    }
+
+    private String decryptMessage(String encryptedMessage) {
+        double[] angles = getAngles();
+        double angleHm = angles[0];
+        double angleMs = angles[1];
+        double angleHs = angles[2];
+        StringBuilder buffer = new StringBuilder();
+        for (int idx = 0; idx < encryptedMessage.length(); idx++) {
+            int c = encryptedMessage.charAt(idx);
+            int factor = (h + m + s + idx + 1) == 0 ? 1 : (h + m + s + idx + 1);
+            double offset = (selectTrig(angleHm) + selectTrig(angleMs) + selectTrig(angleHs)) * factor + (idx + 1);
+            buffer.append((char) ((c - Math.round(offset) + 256) % 256));
+        }
+        return buffer.toString();
     }
 }

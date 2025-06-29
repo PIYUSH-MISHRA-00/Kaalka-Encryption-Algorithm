@@ -1,18 +1,19 @@
 package main.java.com.kaalka;
 
+import java.util.Calendar;
 import java.util.function.Function;
 
-public class KaalkaNTP {
-    public int second;
-
+public class KaalkaNTP extends Kaalka {
     public KaalkaNTP() {
-        this.second = 0;
-        updateTimestamp();
+        super();
     }
 
-    private void updateTimestamp() {
-        long timestamp = System.currentTimeMillis();
-        this.second = (int) ((timestamp / 1000) % 60);
+    // Optionally, you can override updateTimestamp to use NTP time if needed.
+    // For now, it uses system time (UTC) for demonstration.
+    @Override
+    protected void updateTimestamp() {
+        Calendar now = Calendar.getInstance();
+        setTimeFields(now.get(Calendar.HOUR_OF_DAY) % 12, now.get(Calendar.MINUTE), now.get(Calendar.SECOND));
     }
 
     public String encrypt(String data, Function<Integer, Integer> encryptionFunction) {
