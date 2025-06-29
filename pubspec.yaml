@@ -1,7 +1,7 @@
 
 name: kaalka
 description: For encryption and decryption using Kaalka and KaalkaNTP.
-version: 1.0.0
+version: 2.0.0
 homepage: https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm/tree/Dart
 environment:
   sdk: '>=2.12.0 <4.0.0'

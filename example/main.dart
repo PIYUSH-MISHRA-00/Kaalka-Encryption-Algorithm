@@ -1,37 +1,32 @@
-import 'package:Kaalka/kaalka.dart';
-import 'package:Kaalka/kaalka_ntp.dart';
-import 'package:Kaalka/packet.dart';
+import 'package:kaalka/kaalka.dart';
+import 'package:kaalka/kaalka_ntp.dart';
+import 'package:kaalka/packet.dart';
 
 Future<void> main() async {
-  // Example usage of Kaalka
+  // Basic Kaalka usage with current system time
   final kaalka = Kaalka();
-  final originalMessage = "Hello, Kaalka!";
-  final timestamp = DateTime.now(); // Get the current timestamp
-  final encryptedMessage = kaalka.encrypt(originalMessage, timestamp);
-  final decryptedMessage = kaalka.decrypt(encryptedMessage, timestamp);
+  final message = 'Hello, Kaalka!';
+  final encrypted = kaalka.encrypt(message);
+  final decrypted = kaalka.decrypt(encrypted);
+  print('Encrypted: $encrypted');
+  print('Decrypted: $decrypted');
 
-  print("Original Message: $originalMessage");
-  print("Encrypted Message: $encryptedMessage");
-  print("Decrypted Message: $decryptedMessage");
+  // Kaalka with custom timestamp
+  final customKaalka = Kaalka('10:15:30');
+  final encryptedCustom = customKaalka.encrypt(message, '10:15:30');
+  final decryptedCustom = customKaalka.decrypt(encryptedCustom, '10:15:30');
+  print('Encrypted (custom): $encryptedCustom');
+  print('Decrypted (custom): $decryptedCustom');
 
-  // Example usage of KaalkaNTP
-  final kaalkaNTP = KaalkaNTP();
-  final encryptedNTPMessage = kaalkaNTP.encrypt(originalMessage);
-  final decryptedNTPMessage = kaalkaNTP.decrypt(encryptedNTPMessage);
+  // KaalkaNTP async usage
+  final encryptedNtp = await KaalkaNTP.encryptWithNtp(message);
+  final decryptedNtp = await KaalkaNTP.decryptWithNtp(encryptedNtp);
+  print('Encrypted (NTP): $encryptedNtp');
+  print('Decrypted (NTP): $decryptedNtp');
 
-  print("\nUsing KaalkaNTP:");
-  print("Original Message: $originalMessage");
-  print("Encrypted NTP Message: $encryptedNTPMessage");
-  print("Decrypted NTP Message: $decryptedNTPMessage");
-
-  // Example usage of Packet sending and receiving
-  Packet("Hello, Kaalka!");
-
-  // Simulate sending and receiving of encrypted data using Packet
-  Packet.sender();
-
-  // Wait for sender to complete before receiving
-  await Future.delayed(Duration(seconds: 2));
-  
-  Packet.receiver();
+  // Packet example
+  final packet = Packet(message, timeKey: '12:34:56');
+  packet.encrypt();
+  final decryptedPacket = packet.decrypt();
+  print('Packet decrypted: $decryptedPacket');
 }

@@ -1,28 +1,26 @@
 import 'dart:async';
 import 'dart:io';
-import 'kaalka_ntp.dart';
+import 'kaalka.dart';
 
+/// Packet: Example wrapper for encrypting/decrypting packets with Kaalka.
 class Packet {
   String data;
-  String? encryptedData;
+  String? encrypted;
+  dynamic timeKey;
 
-  Packet(this.data) {
-    encryptedData = null;
+  Packet(this.data, {this.timeKey});
+
+  /// Encrypt the packet data.
+  void encrypt() {
+    final k = Kaalka(timeKey);
+    encrypted = k.encrypt(data);
   }
 
-  void encrypt(KaalkaNTP kaalka) {
-    if (encryptedData == null) {
-      String encryptedMessage = kaalka.encrypt(data);
-      encryptedData = encryptedMessage;
-    }
-  }
-
-  void decrypt(KaalkaNTP kaalka) {
-    if (encryptedData != null) {
-      String decryptedMessage = kaalka.decrypt(encryptedData!);
-      data = decryptedMessage;
-      encryptedData = null;
-    }
+  /// Decrypt the packet data.
+  String decrypt() {
+    if (encrypted == null) throw Exception('No encrypted data');
+    final k = Kaalka(timeKey);
+    return k.decrypt(encrypted!);
   }
 
   static void sender() {
@@ -34,12 +32,11 @@ class Packet {
     var packet = Packet(message);
 
     // Encrypt the packet using Kaalka algorithm
-    var kaalka = KaalkaNTP();
-    packet.encrypt(kaalka);
-    print("Encrypted Data: ${packet.encryptedData}");
+    packet.encrypt();
+    print("Encrypted Data: ${packet.encrypted}");
 
     // Simulate sending the encrypted data over the network
-    send_data_over_network(packet.encryptedData!);
+    send_data_over_network(packet.encrypted!);
   }
 
   static void receiver() {
@@ -49,8 +46,7 @@ class Packet {
       var packet = Packet(receivedData);
 
       // Decrypt the packet using Kaalka algorithm
-      var kaalka = KaalkaNTP();
-      packet.decrypt(kaalka);
+      packet.decrypt();
       print("Decrypted Message: ${packet.data}");
     });
   }
@@ -65,22 +61,22 @@ class Packet {
     });
   }
 
-static Future<String> receive_data_over_network() async {
-  var address = InternetAddress('127.0.0.1');
-  var port = 12345;
-  var socket = await RawDatagramSocket.bind(address, port);
+  static Future<String> receive_data_over_network() async {
+    var address = InternetAddress('127.0.0.1');
+    var port = 12345;
+    var socket = await RawDatagramSocket.bind(address, port);
 
-  Completer<String> completer = Completer<String>();
+    Completer<String> completer = Completer<String>();
 
-  // Listen for incoming data
-  socket.listen((event) {
-    if (event == RawSocketEvent.read) {
-      Datagram datagram = socket.receive()!;
-      String receivedData = String.fromCharCodes(datagram.data).trim();
-      completer.complete(receivedData);
-    }
-  });
+    // Listen for incoming data
+    socket.listen((event) {
+      if (event == RawSocketEvent.read) {
+        Datagram datagram = socket.receive()!;
+        String receivedData = String.fromCharCodes(datagram.data).trim();
+        completer.complete(receivedData);
+      }
+    });
 
-  return completer.future;
-}
+    return completer.future;
+  }
 }

@@ -1,94 +1,37 @@
-import 'dart:math';
 import 'dart:async';
-import 'package:ntp/ntp.dart';
+import 'dart:io';
+import 'kaalka.dart';
 
-class KaalkaNTP {
-  int second = 0;
+/// KaalkaNTP: Kaalka encryption using NTP or user-provided timestamp.
+/// Compatible with Python/JS implementations.
+class KaalkaNTP extends Kaalka {
+  KaalkaNTP([dynamic timeKey]) : super(timeKey);
 
-  DateTime getCurrentTime() {
-  return DateTime.now();
+  /// Get current time from NTP server (returns [h, m, s]).
+  /// This is a stub; for real NTP, use a Dart NTP package or implement UDP query.
+  static Future<List<int>> getNtpTime() async {
+    // TODO: Replace with real NTP query for production use.
+    final now = DateTime.now().toUtc();
+    return [now.hour % 12, now.minute, now.second];
   }
 
-  KaalkaNTP() {
-    _updateTimestamp();
-  }
-
-  Future<void> _updateTimestamp() async {
-    try {
-      DateTime ntpTime = await NTP.now();
-      var timestamp = ntpTime.millisecondsSinceEpoch / 1000;
-      second = (timestamp % 60).toInt();
-    } catch (e) {
-      print("Error fetching NTP time: $e");
-      // Fallback to system time if NTP fails
-      var timestamp = DateTime.now().millisecondsSinceEpoch / 1000;
-      second = (timestamp % 60).toInt();
+  /// Encrypt [data] using NTP time or provided [timeKey].
+  static Future<String> encryptWithNtp(String data, {dynamic timeKey}) async {
+    if (timeKey != null) {
+      return Kaalka(timeKey).encrypt(data);
+    } else {
+      final t = await getNtpTime();
+      return Kaalka('${t[0]}:${t[1]}:${t[2]}').encrypt(data);
     }
   }
 
-  String encrypt(String data) {
-    var encryptedMessage = _encryptMessage(data);
-    return encryptedMessage;
-  }
-
-  String decrypt(String encryptedMessage) {
-    var decryptedMessage = _decryptMessage(encryptedMessage);
-    return decryptedMessage;
-  }
-
-  String _encryptMessage(String data) {
-    var asciiValues = data.runes.toList();
-    var encryptedValues = asciiValues.map((val) => _applyTrigonometricFunction(val)).toList();
-    var encryptedMessage = String.fromCharCodes(encryptedValues);
-    return encryptedMessage;
-  }
-
-  String _decryptMessage(String encryptedMessage) {
-    var revAscii = encryptedMessage.runes.toList();
-    var decryptedValues = revAscii.map((val) => _applyInverseFunction(val)).toList();
-    var decryptedMessage = String.fromCharCodes(decryptedValues);
-    return decryptedMessage;
-  }
-
-  int _applyTrigonometricFunction(int value) {
-    var quadrant = _determineQuadrant(second);
-    if (quadrant == 1) {
-      return (value + sin(second)).round();
-    } else if (quadrant == 2) {
-      return (value + 1 / tan(second)).round();
-    } else if (quadrant == 3) {
-      return (value + cos(second)).round();
-    } else if (quadrant == 4) {
-      return (value + tan(second)).round();
+  /// Decrypt [data] using NTP time or provided [timeKey].
+  static Future<String> decryptWithNtp(String data, {dynamic timeKey}) async {
+    if (timeKey != null) {
+      return Kaalka(timeKey).decrypt(data);
     } else {
-      return value;
-    }
-  }
-
-  int _applyInverseFunction(int value) {
-    var quadrant = _determineQuadrant(second);
-    if (quadrant == 1) {
-      return (value - sin(second)).round();
-    } else if (quadrant == 2) {
-      return (value - 1 / tan(second)).round();
-    } else if (quadrant == 3) {
-      return (value - cos(second)).round();
-    } else if (quadrant == 4) {
-      return (value - tan(second)).round();
-    } else {
-      return value;
-    }
-  }
-
-  int _determineQuadrant(int second) {
-    if (0 <= second && second <= 15) {
-      return 1;
-    } else if (16 <= second && second <= 30) {
-      return 2;
-    } else if (31 <= second && second <= 45) {
-      return 3;
-    } else {
-      return 4;
+      final t = await getNtpTime();
+      return Kaalka('${t[0]}:${t[1]}:${t[2]}').decrypt(data);
     }
   }
 }

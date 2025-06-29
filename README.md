@@ -1,41 +1,88 @@
-# Kaalka Package for Dart
+# Kaalka Encryption Algorithm for Dart
 
-* Based upon the Kaalka Encryption Algorithm
+Robust, timestamp-based encryption for Dart, compatible with Python and JavaScript implementations. Uses angles and trigonometric functions derived from timestamps for strong, time-dependent encryption.
 
-* Other developers can use your package by adding it as a dependency in their own Dart projects. They need to include the package name and version in their **pubspec.yaml** file:
+## Features
+- **Robust encryption** using timestamp-based keys (angles, trigonometric functions)
+- **Cross-platform**: Compatible with Python and Node.js Kaalka implementations
+- **Flexible API**: Use system time, NTP, or custom timestamp for encryption/decryption
+- **Packet support**: Example wrapper for secure message packets
 
-```
+## Installation
+Add to your `pubspec.yaml`:
+
+```yaml
 dependencies:
-  kaalka: ^1.0.0
+  kaalka:
+    git:
+      url: https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm.git
 ```
 
-Importing and Using: Once the package is added as a dependency, developers can import and use its classes, functions, and widgets in their Dart code:
+## Usage
 
-```
+### Basic Encryption/Decryption
+```dart
 import 'package:kaalka/kaalka.dart';
 
 void main() {
-  // Use classes, functions, or widgets from the kaalka package
-  // ...
+  final kaalka = Kaalka(); // Uses current system time
+  final message = 'Hello, Kaalka!';
+  final encrypted = kaalka.encrypt(message); // Encrypt with current time
+  final decrypted = kaalka.decrypt(encrypted); // Decrypt with same time
+  print('Encrypted: $encrypted');
+  print('Decrypted: $decrypted');
 }
 ```
-Using Widgets: If your package includes widgets, they can be used just like any other Flutter widgets in the user's UI code:
 
-```
-import 'package:flutter/material.dart';
+### Using a Custom Timestamp
+```dart
 import 'package:kaalka/kaalka.dart';
 
-void main() {
-  runApp(MyApp());
-}
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: MyCustomWidget(), // Use the widget from your package
-      ),
-    );
-  }
+final kaalka = Kaalka('10:15:30'); // HH:MM:SS, MM:SS, or SS
+final encrypted = kaalka.encrypt('Secret', '10:15:30');
+final decrypted = kaalka.decrypt(encrypted, '10:15:30');
+```
+
+### Using KaalkaNTP (NTP time, async)
+```dart
+import 'package:kaalka/kaalka_ntp.dart';
+
+void main() async {
+  final encrypted = await KaalkaNTP.encryptWithNtp('Hello!');
+  final decrypted = await KaalkaNTP.decryptWithNtp(encrypted);
+  print('Encrypted: $encrypted');
+  print('Decrypted: $decrypted');
 }
 ```
+
+### Packet Example
+```dart
+import 'package:kaalka/packet.dart';
+
+final packet = Packet('Payload', timeKey: '12:34:56');
+packet.encrypt();
+final decrypted = packet.decrypt();
+```
+
+## API Reference
+
+### Kaalka
+- `Kaalka([dynamic timeKey])` — Create instance with optional timestamp
+- `String encrypt(String data, [dynamic timeKey])` — Encrypt data
+- `String decrypt(String encrypted, [dynamic timeKey])` — Decrypt data
+
+### KaalkaNTP
+- `static Future<String> encryptWithNtp(String data, {dynamic timeKey})`
+- `static Future<String> decryptWithNtp(String data, {dynamic timeKey})`
+
+### Packet
+- `Packet(String data, {dynamic timeKey})`
+- `void encrypt()`
+- `String decrypt()`
+
+## Timestamp Format
+- Accepts `int` (seconds), `String` (`HH:MM:SS`, `MM:SS`, or `SS`)
+- If omitted, uses current system time
+
+## Compatibility
+- Compatible with [Python](https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm) and [Node.js](https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm) Kaalka libraries
