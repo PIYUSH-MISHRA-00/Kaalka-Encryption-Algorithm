@@ -1,6 +1,6 @@
 {
   "name": "kaalka",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Kaalka encryption based upon the Kaalka algorithm",
   "main": "kaalka.js",
   "scripts": {
@@ -8,11 +8,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm.git"
+    "url": "https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm/tree/javascript"
   },
   "author": "PIYUSH-MISHRA-00",
   "bugs": {
     "url": "https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm/issues"
   },
-  "homepage": "https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm#readme"
+  "homepage": "https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm",
+  "devDependencies": {
+    "jest": "^30.0.3"
+  },
+  "dependencies": {
+    "mathjs": "^14.5.2",
+    "ntp-client": "^0.5.3"
+  }
 }
