@@ -1,6 +1,8 @@
 # kaalka/packet.py
 import socket
-from kaalkaNTP import KaalkaNTP
+from kaalkaNTP.kaalkaNTP import KaalkaNTP
+import math
+import time
 
 class Packet:
     def __init__(self, data: str) -> None:

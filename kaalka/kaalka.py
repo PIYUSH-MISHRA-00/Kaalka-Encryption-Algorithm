@@ -3,65 +3,100 @@ import time
 
 class Kaalka:
     def __init__(self):
-        self.second = 0
+        self.h = 0
+        self.m = 0
+        self.s = 0
         self._update_timestamp()
 
     def _update_timestamp(self):
         timestamp = time.time()
-        self.second = int(timestamp % 60)
+        self.s = int(timestamp % 60)
+        self.m = (int(timestamp // 60) % 60)
+        self.h = (int(timestamp // 3600) % 24)
 
-    def encrypt(self, data: str) -> str:
+    def _parse_time(self, time_str):
+        if isinstance(time_str, int):
+            h, m, s = 0, 0, time_str
+        elif isinstance(time_str, str):
+            parts = time_str.split(":")
+            if len(parts) == 3:
+                h, m, s = map(int, parts)
+            elif len(parts) == 2:
+                h, m, s = 0, int(parts[0]), int(parts[1])
+            elif len(parts) == 1:
+                h, m, s = 0, 0, int(parts[0])
+            else:
+                raise ValueError("Invalid time format. Use HH:MM:SS, MM:SS, or SS.")
+        else:
+            raise ValueError("Invalid time format. Use HH:MM:SS, MM:SS, or SS.")
+        return h % 12, m, s
+
+    def encrypt(self, data: str, time_key: str = None) -> str:
+        if time_key is not None:
+            self.h, self.m, self.s = self._parse_time(time_key)
+        else:
+            t = time.localtime()
+            self.h = t.tm_hour % 12
+            self.m = t.tm_min
+            self.s = t.tm_sec
         encrypted_message = self._encrypt_message(data)
         return encrypted_message
 
-    def decrypt(self, encrypted_message: str) -> str:
+    def decrypt(self, encrypted_message: str, time_key: str = None) -> str:
+        if time_key is not None:
+            self.h, self.m, self.s = self._parse_time(time_key)
+        else:
+            t = time.localtime()
+            self.h = t.tm_hour % 12
+            self.m = t.tm_min
+            self.s = t.tm_sec
         decrypted_message = self._decrypt_message(encrypted_message)
         return decrypted_message
 
+    def _get_angles(self):
+        hour_angle = (30 * self.h) + (0.5 * self.m) + (0.5/60 * self.s)
+        minute_angle = (6 * self.m) + (0.1 * self.s)
+        second_angle = 6 * self.s
+        angle_hm = min(abs(hour_angle - minute_angle), 360 - abs(hour_angle - minute_angle))
+        angle_ms = min(abs(minute_angle - second_angle), 360 - abs(minute_angle - second_angle))
+        angle_hs = min(abs(hour_angle - second_angle), 360 - abs(hour_angle - second_angle))
+        return angle_hm, angle_ms, angle_hs
+
+    def _select_trig(self, angle):
+        quadrant = int(angle // 90) + 1
+        if quadrant == 1:
+            return math.sin(math.radians(angle))
+        elif quadrant == 2:
+            return math.cos(math.radians(angle))
+        elif quadrant == 3:
+            return math.tan(math.radians(angle))
+        else:
+            # Avoid division by zero for cotangent
+            tan_val = math.tan(math.radians(angle))
+            return 1 / tan_val if tan_val != 0 else 0
+
     def _encrypt_message(self, data: str) -> str:
-        ascii_values = [ord(char) for char in data]
-        encrypted_values = [self._apply_trigonometric_function(val) for val in ascii_values]
-        encrypted_message = "".join(chr(val) for val in encrypted_values)
-        return encrypted_message
+        angle_hm, angle_ms, angle_hs = self._get_angles()
+        encrypted = ""
+        for idx, c in enumerate(data):
+            factor = (self.h + self.m + self.s + idx + 1) or 1
+            offset = (
+                self._select_trig(angle_hm) +
+                self._select_trig(angle_ms) +
+                self._select_trig(angle_hs)
+            ) * factor + (idx + 1)
+            encrypted += chr((ord(c) + int(round(offset))) % 256)
+        return encrypted
 
     def _decrypt_message(self, encrypted_message: str) -> str:
-        rev_ascii = [ord(char) for char in encrypted_message]
-        decrypted_values = [self._apply_inverse_function(val) for val in rev_ascii]
-        decrypted_message = "".join(chr(val) for val in decrypted_values)
-        return decrypted_message
-
-    def _apply_trigonometric_function(self, value: int) -> int:
-        quadrant = self._determine_quadrant(self.second)
-        if quadrant == 1:
-            return round(value + math.sin(self.second))
-        elif quadrant == 2:
-            return round(value + 1 / math.tan(self.second))
-        elif quadrant == 3:
-            return round(value + math.cos(self.second))
-        elif quadrant == 4:
-            return round(value + math.tan(self.second))
-        else:
-            return value  # In case of an invalid quadrant, do not modify the value.
-        
-    def _apply_inverse_function(self, value: int) -> int:
-        quadrant = self._determine_quadrant(self.second)
-        if quadrant == 1:
-            return round(value - math.sin(self.second))
-        elif quadrant == 2:
-            return round(value - 1 / math.tan(self.second))
-        elif quadrant == 3:
-            return round(value - math.cos(self.second))
-        elif quadrant == 4:
-            return round(value - math.tan(self.second))
-        else:
-            return value  # In case of an invalid quadrant, do not modify the value.
-
-    def _determine_quadrant(self, second: int) -> int:
-        if 0 <= second <= 15:
-            return 1
-        elif 16 <= second <= 30:
-            return 2
-        elif 31 <= second <= 45:
-            return 3
-        else:
-            return 4
+        angle_hm, angle_ms, angle_hs = self._get_angles()
+        decrypted = ""
+        for idx, c in enumerate(encrypted_message):
+            factor = (self.h + self.m + self.s + idx + 1) or 1
+            offset = (
+                self._select_trig(angle_hm) +
+                self._select_trig(angle_ms) +
+                self._select_trig(angle_hs)
+            ) * factor + (idx + 1)
+            decrypted += chr((ord(c) - int(round(offset))) % 256)
+        return decrypted

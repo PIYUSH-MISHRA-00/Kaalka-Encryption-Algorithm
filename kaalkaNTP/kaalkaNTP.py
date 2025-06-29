@@ -30,17 +30,55 @@ class KaalkaNTP:
         decrypted_message = self._decrypt_message(encrypted_message)
         return decrypted_message
 
+    def _get_angles(self):
+        h = self.second // 3600
+        m = (self.second % 3600) // 60
+        s = self.second % 60
+        hour_angle = (30 * h) + (0.5 * m) + (0.5/60 * s)
+        minute_angle = (6 * m) + (0.1 * s)
+        second_angle = 6 * s
+        angle_hm = min(abs(hour_angle - minute_angle), 360 - abs(hour_angle - minute_angle))
+        angle_ms = min(abs(minute_angle - second_angle), 360 - abs(minute_angle - second_angle))
+        angle_hs = min(abs(hour_angle - second_angle), 360 - abs(hour_angle - second_angle))
+        return angle_hm, angle_ms, angle_hs
+
+    def _select_trig(self, angle):
+        quadrant = int(angle // 90) + 1
+        if quadrant == 1:
+            return math.sin(math.radians(angle))
+        elif quadrant == 2:
+            return math.cos(math.radians(angle))
+        elif quadrant == 3:
+            return math.tan(math.radians(angle))
+        else:
+            tan_val = math.tan(math.radians(angle))
+            return 1 / tan_val if tan_val != 0 else 0
+
     def _encrypt_message(self, data: str) -> str:
-        ascii_values = [ord(char) for char in data]
-        encrypted_values = [self._apply_trigonometric_function(val) for val in ascii_values]
-        encrypted_message = "".join(chr(val) for val in encrypted_values)
-        return encrypted_message
-    
+        angle_hm, angle_ms, angle_hs = self._get_angles()
+        encrypted = ""
+        for idx, c in enumerate(data):
+            factor = (self.second + idx + 1) or 1
+            offset = (
+                self._select_trig(angle_hm) +
+                self._select_trig(angle_ms) +
+                self._select_trig(angle_hs)
+            ) * factor + (idx + 1)
+            encrypted += chr((ord(c) + int(round(offset))) % 256)
+        return encrypted
+
     def _decrypt_message(self, encrypted_message: str) -> str:
-        rev_ascii = [ord(char) for char in encrypted_message]
-        decrypted_values = [self._apply_inverse_function(val) for val in rev_ascii]
-        decrypted_message = "".join(chr(val) for val in decrypted_values)
-        return decrypted_message
+        angle_hm, angle_ms, angle_hs = self._get_angles()
+        decrypted = ""
+        for idx, c in enumerate(encrypted_message):
+            factor = (self.second + idx + 1) or 1
+            offset = (
+                self._select_trig(angle_hm) +
+                self._select_trig(angle_ms) +
+                self._select_trig(angle_hs)
+            ) * factor + (idx + 1)
+            decrypted += chr((ord(c) - int(round(offset))) % 256)
+        return decrypted
 
     def _apply_trigonometric_function(self, value: int) -> int:
         quadrant = self._determine_quadrant(self.second)
