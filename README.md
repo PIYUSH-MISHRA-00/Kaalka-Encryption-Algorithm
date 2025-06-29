@@ -4,81 +4,142 @@
 
 **Time is the Key 🔑**
 
-A robust, timestamp-based encryption algorithm with cross-platform implementations in Python, Java, Kotlin, Dart, and JavaScript. Uses angles and trigonometric functions derived from timestamps for strong, time-dependent encryption.
+Kaalka is a robust, timestamp-based encryption algorithm designed for cross-platform security. It leverages the mathematics of clock angles and trigonometric functions, making encryption and decryption dependent on time—either the current system time or a user-supplied timestamp. This approach ensures that the same message encrypted at different times yields different ciphertexts, providing strong, time-variant security.
 
 ---
 
-## Supported Languages & Quick Start
+## 🌐 Supported Languages
+
+Kaalka is implemented and maintained in the following languages, ensuring seamless interoperability and consistent security across platforms:
+
+- **Python**: For scripting, automation, and backend services.
+- **Node.js (JavaScript)**: For web, serverless, and cross-platform apps.
+- **Java**: For enterprise, Android, and backend systems.
+- **Kotlin**: For modern JVM and Android development.
+- **Dart**: For Flutter and cross-platform mobile/web apps.
+
+---
+
+## 🚀 Quick Start
 
 ### Python
+
+Install:
 ```bash
 pip install kaalka
 ```
+Usage:
 ```python
 from kaalka import Kaalka
 kaalka = Kaalka()
 message = "Hello, world!"
 encrypted = kaalka.encrypt(message)
 decrypted = kaalka.decrypt(encrypted)
+print("Encrypted:", encrypted)
+print("Decrypted:", decrypted)
 ```
 
-### Node.js
+---
+
+### Node.js (JavaScript)
+
+Install:
 ```bash
 npm i kaalka
 ```
+Usage:
 ```js
 const Kaalka = require('kaalka');
 const kaalka = new Kaalka();
-const encrypted = kaalka.encrypt('Hello, world!');
+const message = "Hello, world!";
+const encrypted = kaalka.encrypt(message);
 const decrypted = kaalka.decrypt(encrypted);
+console.log("Encrypted:", encrypted);
+console.log("Decrypted:", decrypted);
 ```
+
+---
 
 ### Java
-Add the JAR to your project:
+
+Add the JAR to your project (see [Build & Release](#build--release-java--kotlin)):
 ```java
 import com.kaalka.Kaalka;
-Kaalka kaalka = new Kaalka();
-String encrypted = kaalka.encrypt("Hello, Kaalka!");
-String decrypted = kaalka.decrypt(encrypted);
+public class Example {
+    public static void main(String[] args) {
+        Kaalka kaalka = new Kaalka();
+        String message = "Hello, Kaalka!";
+        String encrypted = kaalka.encrypt(message);
+        String decrypted = kaalka.decrypt(encrypted);
+        System.out.println("Encrypted: " + encrypted);
+        System.out.println("Decrypted: " + decrypted);
+    }
+}
 ```
 
+---
+
 ### Kotlin
+
 Add the JAR to your project:
 ```kotlin
 dependencies {
-    implementation(files("path/to/your/Kaalka-Encryption-Algorithm.jar"))
+    implementation(files("path/to/Kaalka-Encryption-Algorithm.jar"))
 }
 ```
+Usage:
 ```kotlin
 import com.kaalka.Kaalka
-val kaalka = Kaalka()
-val encrypted = kaalka.encrypt("Hello, Kaalka!")
-val decrypted = kaalka.decrypt(encrypted)
+fun main() {
+    val kaalka = Kaalka()
+    val message = "Hello, Kaalka!"
+    val encrypted = kaalka.encrypt(message)
+    val decrypted = kaalka.decrypt(encrypted)
+    println("Encrypted: $encrypted")
+    println("Decrypted: $decrypted")
+}
 ```
 
+---
+
 ### Dart
+
 Add to your `pubspec.yaml`:
 ```yaml
 dependencies:
-  kaalka: ^1.0.0
+  kaalka: ^2.0.0
 ```
+Usage:
 ```dart
 import 'package:kaalka/kaalka.dart';
-final kaalka = Kaalka();
-final encrypted = kaalka.encrypt('Hello, world!');
-final decrypted = kaalka.decrypt(encrypted);
+
+void main() {
+  final kaalka = Kaalka();
+  final message = 'Hello, world!';
+  final encrypted = kaalka.encrypt(message);
+  final decrypted = kaalka.decrypt(encrypted);
+  print('Encrypted: $encrypted');
+  print('Decrypted: $decrypted');
+}
 ```
 
 ---
 
-## How Kaalka Works
-- **Timestamp-based:** Encryption and decryption depend on the time (hour, minute, second) or a provided timestamp.
-- **Angle & Trigonometry:** Uses angles between clock hands and trigonometric functions to generate encryption offsets.
-- **Cross-platform:** Compatible logic across Python, Java, Kotlin, Dart, and JavaScript.
+## 🔑 How Kaalka Works
+
+- **Timestamp-based Security:**  
+  Encryption and decryption depend on the time (hour, minute, second) or a provided timestamp, making brute-force attacks significantly harder.
+- **Mathematical Obfuscation:**  
+  Uses the angles between clock hands and trigonometric functions (sin, cos, tan, cot) to generate complex, time-dependent offsets for each character.
+- **Flexible Timestamp Input:**  
+  Accepts timestamps in `HH:MM:SS`, `MM:SS`, or `SS` formats, or uses the current system time by default.
+- **Cross-Platform Consistency:**  
+  The algorithm is mathematically identical across all supported languages, ensuring encrypted data can be decrypted on any platform.
 
 ---
 
-## Project Structure (Kotlin Example)
+## 📦 Project Structure (Kotlin Example)
+
 ```
 kaalka-library/
 ├─ src/
@@ -100,7 +161,8 @@ kaalka-library/
 
 ---
 
-## Example Usage (Kotlin)
+## 🧪 Example Usage (Kotlin)
+
 ```kotlin
 val kaalka = Kaalka()
 val message = "Hello, Kaalka!"
@@ -111,13 +173,20 @@ val decrypted = kaalka.decrypt(encrypted, timestamp)
 
 ---
 
-## Cross-Platform Compatibility
-- Compatible with Python, Dart, JavaScript, Java, and Kotlin implementations.
-- Uses the same timestamp-based, angle/trigonometric encryption logic.
+## 🔄 Cross-Platform Compatibility
+
+- **Python:** [PyPI](https://pypi.org/project/kaalka/)
+- **Node.js:** [npm](https://www.npmjs.com/package/kaalka)
+- **Dart:** [pub.dev](https://pub.dev/packages/kaalka)
+- **Java/Kotlin:** [GitHub Releases](https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm/releases)
+
+All implementations use the same timestamp-based, angle/trigonometric encryption logic, ensuring you can encrypt in one language and decrypt in another.
 
 ---
 
-## Build & Test (Kotlin)
+## 🛠️ Build & Release (Java / Kotlin)
+
+**Build the JAR:**
 ```bash
 cd kaalka-library
 # If you have gradlew.bat:
@@ -125,3 +194,30 @@ cd kaalka-library
 # Or use IntelliJ IDEA to build and run tests
 ```
 The JAR will be in `build/libs/`.
+
+**Testing:**
+- Run tests using `./gradlew.bat test` or from your IDE.
+
+---
+
+## 📖 License
+
+Kaalka is open-source under the MIT License. See [LICENSE](LICENSE) for details.
+
+---
+
+## 🤝 Contributing
+
+Contributions, bug reports, and feature requests are welcome!  
+Please open an issue or submit a pull request on [GitHub](https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm).
+
+---
+
+## 💡 Author & Credits
+
+Developed and maintained by [Piyush Mishra](https://github.com/PIYUSH-MISHRA-00).  
+Special thanks for all across Python, Java, Kotlin, Dart, and JavaScript implementations.
+
+---
+
+**Time is the Key.**
