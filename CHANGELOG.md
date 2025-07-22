@@ -1,3 +1,14 @@
+# [4.0.0] - 2025-07-22
+### Changed
+- File/media encryption now uses integer arithmetic for lossless, reversible results (matches Python/JavaScript logic)
+- Robust extension handling and cross-language compatibility
+
+### Fixed
+- All file/media types (images, binary, video, music, text, CSV, JSON, XML, etc.) are now encrypted/decrypted losslessly
+
+### Documentation
+- README updated to reflect robust, lossless file/media support and cross-language compatibility
+
 # Changelog
 
 ## [3.0.0] - 2025-07-22

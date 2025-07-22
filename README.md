@@ -1,13 +1,14 @@
 
+
 # Kaalka Encryption Algorithm for Dart
 
-Robust, timestamp-based encryption for Dart, compatible with Python and JavaScript implementations. Uses angles and trigonometric functions derived from timestamps for strong, time-dependent encryption.
+Robust, timestamp-based encryption for Dart, compatible with Python and JavaScript implementations. Uses angles and trigonometric functions for text, and integer arithmetic for file/media encryption, ensuring lossless, reversible results for all file types (images, binary, etc.).
 
 ## Features
-- **Robust encryption** using timestamp-based keys (angles, trigonometric functions)
+- **Robust encryption** using timestamp-based keys (angles, trigonometric functions for text; integer arithmetic for files/media)
 - **Cross-platform**: Compatible with Python and Node.js Kaalka implementations
 - **Flexible API**: Use system time, NTP, or custom timestamp for encryption/decryption
-- **File/media support**: Encrypt/decrypt any file or media type (text, binary, images, etc.)
+- **File/media support**: Encrypt/decrypt any file or media type (text, binary, images, etc.) with lossless, reversible results
 - **Extension handling**: Encrypted files use `.kaalka`, decrypted files restore original extension
 - **Packet support**: Example wrapper for secure message packets
 
@@ -74,11 +75,11 @@ void main() {
 }
 ```
 
-## Notes
 - Encrypted files use only the `.kaalka` extension (e.g., `photo.kaalka`)
 - Decrypted files restore the original name and extension (e.g., `photo.jpg`)
 - Encryption and decryption must use the same timestamp
 - Supports any file/media type (text, binary, images, etc.)
+- Lossless, reversible encryption for all file/media types (images, video, music, text, CSV, JSON, XML, etc.)
 
 ## License
 See LICENSE file for details.
@@ -86,3 +87,4 @@ See LICENSE file for details.
 ## Contributing
 Contributions, bug reports, and feature requests are welcome! Please open an issue or submit a pull request on GitHub.
 - Compatible with [Python](https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm) and [Node.js](https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm) Kaalka libraries
+  - Dart v4.0.0 uses integer arithmetic for file/media encryption, matching Python/JavaScript for robust, lossless results.

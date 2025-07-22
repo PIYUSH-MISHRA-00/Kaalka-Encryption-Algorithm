@@ -1,7 +1,7 @@
 
 name: kaalka
-version: 3.0.0
-description: Kaalka encryption algorithm for Dart. Time-based encryption for text and files using clock hand angles and trigonometric functions.
+version: 4.0.0
+description: Kaalka encryption algorithm for Dart. Robust, lossless time-based encryption for text and files/media using clock hand angles, trigonometric functions, and integer arithmetic. Cross-language compatible with Python and JavaScript.
 homepage: https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm
 repository: https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm
 environment:

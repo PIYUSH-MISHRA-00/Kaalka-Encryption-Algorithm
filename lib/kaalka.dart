@@ -109,17 +109,17 @@ class Kaalka {
   }
 
   List<int> _proc(List<int> data, bool encrypt) {
-    final angles = _getAngles();
+    // Use integer arithmetic for lossless, reversible byte transformation (for files/media)
+    final key = (h * 3600 + m * 60 + s) == 0 ? 1 : (h * 3600 + m * 60 + s);
     final result = <int>[];
     for (var idx = 0; idx < data.length; idx++) {
       final b = data[idx];
-      final factor = (h + m + s + idx + 1) == 0 ? 1 : (h + m + s + idx + 1);
-      final offset = (angles.map(_selectTrig).reduce((a, b) => a + b)) * factor + (idx + 1);
+      final offset = (key + idx) % 256;
       int val;
       if (encrypt) {
-        val = (b + offset.round()) % 256;
+        val = (b + offset) % 256;
       } else {
-        val = (b - offset.round()) % 256;
+        val = (b - offset) % 256;
       }
       result.add(val);
     }
