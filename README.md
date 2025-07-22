@@ -46,14 +46,12 @@ encrypted_exp = kaalka.encrypt("Hello", time_key="12:34:56")
 decrypted_exp = kaalka.decrypt(encrypted_exp, time_key="12:34:56")
 
 # File / Media
-
-# File / Media
-# NOTE: You do NOT need to specify the original file extension when encrypting or decrypting.
-# Kaalka automatically stores the original extension inside the encrypted file and restores it on decryption.
-kaalka.encrypt_file("input.jpg", "output.kaalka")              # system time
-kaalka.decrypt_file("output.kaalka")                           # restores original extension
-kaalka.encrypt_file("input.jpg", "output.kaalka", time_key="12:34:56")
-kaalka.decrypt_file("output.kaalka", time_key="12:34:56")
+# NOTE: You only specify the input file name (with extension). The encrypted file will always be named <input>.kaalka automatically.
+# Decryption restores the original file name and extension.
+kaalka.encrypt_file("input.jpg")              # produces input.jpg.kaalka
+kaalka.decrypt_file("input.jpg.kaalka")      # restores input.jpg
+kaalka.encrypt_file("input.jpg", time_key="12:34:56")
+kaalka.decrypt_file("input.jpg.kaalka", time_key="12:34:56")
 ```
 
 ### Node.js (JavaScript)
@@ -68,14 +66,12 @@ const encryptedExp = kaalka.encrypt("Hello", "12:34:56");
 const decryptedExp = kaalka.decrypt(encryptedExp, "12:34:56");
 
 // File / Media
-
-// File / Media
-// NOTE: You do NOT need to specify the original file extension when encrypting or decrypting.
-// Kaalka automatically stores the original extension inside the encrypted file and restores it on decryption.
-kaalka.encryptFile("input.jpg", "output.kaalka");              // system time
-kaalka.decryptFile("output.kaalka");                           // restores original extension
-kaalka.encryptFile("input.jpg", "output.kaalka", "12:34:56");
-kaalka.decryptFile("output.kaalka", "12:34:56");
+// NOTE: You only specify the input file name (with extension). The encrypted file will always be named <input>.kaalka automatically.
+// Decryption restores the original file name and extension.
+kaalka.encryptFile("input.jpg");              // produces input.jpg.kaalka
+kaalka.decryptFile("input.jpg.kaalka");       // restores input.jpg
+kaalka.encryptFile("input.jpg", "12:34:56");
+kaalka.decryptFile("input.jpg.kaalka", "12:34:56");
 ```
 
 ### Java
@@ -89,14 +85,12 @@ String encryptedExp = kaalka.encrypt("Hello", "12:34:56");
 String decryptedExp = kaalka.decrypt(encryptedExp, "12:34:56");
 
 // File / Media
-
-// File / Media
-// NOTE: You do NOT need to specify the original file extension when encrypting or decrypting.
-// Kaalka automatically stores the original extension inside the encrypted file and restores it on decryption.
-kaalka.encryptFile("input.jpg", "output.kaalka");              // system time
-kaalka.decryptFile("output.kaalka");                           // restores original extension
-kaalka.encryptFile("input.jpg", "output.kaalka", "12:34:56");
-kaalka.decryptFile("output.kaalka", "12:34:56");
+// NOTE: You only specify the input file name (with extension). The encrypted file will always be named <input>.kaalka automatically.
+// Decryption restores the original file name and extension.
+kaalka.encryptFile("input.jpg");              // produces input.jpg.kaalka
+kaalka.decryptFile("input.jpg.kaalka");       // restores input.jpg
+kaalka.encryptFile("input.jpg", "12:34:56");
+kaalka.decryptFile("input.jpg.kaalka", "12:34:56");
 ```
 
 ### Kotlin
@@ -110,10 +104,12 @@ val encryptedExp = kaalka.encrypt("Hello", "12:34:56")
 val decryptedExp = kaalka.decrypt(encryptedExp, "12:34:56")
 
 // File / Media
-kaalka.encryptFile("input.jpg", "enc.bin")               // system time
-kaalka.decryptFile("enc.bin", "output.jpg")
-kaalka.encryptFile("input.jpg", "enc.bin", "12:34:56")
-kaalka.decryptFile("enc.bin", "output.jpg", "12:34:56")
+// NOTE: You only specify the input file name (with extension). The encrypted file will always be named <input>.kaalka automatically.
+// Decryption restores the original file name and extension.
+kaalka.encryptFile("input.jpg")               // produces input.jpg.kaalka
+kaalka.decryptFile("input.jpg.kaalka")        // restores input.jpg
+kaalka.encryptFile("input.jpg", "12:34:56")
+kaalka.decryptFile("input.jpg.kaalka", "12:34:56")
 ```
 
 ### Dart
@@ -127,14 +123,12 @@ final encryptedExp = kaalka.encrypt('Hello', timeKey: '12:34:56');
 final decryptedExp = kaalka.decrypt(encryptedExp, timeKey: '12:34:56');
 
 // File / Media
-
-// File / Media
-// NOTE: You do NOT need to specify the original file extension when encrypting or decrypting.
-// Kaalka automatically stores the original extension inside the encrypted file and restores it on decryption.
-kaalka.encryptFile('input.jpg', 'output.kaalka');              // system time
-kaalka.decryptFile('output.kaalka');                           // restores original extension
-kaalka.encryptFile('input.jpg', 'output.kaalka', timeKey: '12:34:56');
-kaalka.decryptFile('output.kaalka', timeKey: '12:34:56');
+// NOTE: You only specify the input file name (with extension). The encrypted file will always be named <input>.kaalka automatically.
+// Decryption restores the original file name and extension.
+kaalka.encryptFile('input.jpg');              // produces input.jpg.kaalka
+kaalka.decryptFile('input.jpg.kaalka');       // restores input.jpg
+kaalka.encryptFile('input.jpg', timeKey: '12:34:56');
+kaalka.decryptFile('input.jpg.kaalka', timeKey: '12:34:56');
 ```
 
 ---
