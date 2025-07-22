@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: kaalka
-Version: 2.0
+Version: 3.0
 Summary: Kaalka Encryption Library
 Home-page: https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm/tree/python
 Author: PIYUSH-MISHRA-00
@@ -44,35 +44,35 @@ pip install kaalka
 
 ## 📝 Usage
 
-### Basic Encryption/Decryption (System Time)
+
+### Unified Text and File Encryption/Decryption
 
 ```python
 from kaalka import Kaalka
 
+# Text encryption/decryption (system time)
 kaalka = Kaalka()
 message = "Hello, world!"
-encrypted_message = kaalka.encrypt(message)  # Uses current system time as key
-decrypted_message = kaalka.decrypt(encrypted_message)  # Uses current system time
+encrypted_message = kaalka.encrypt(message)
+decrypted_message = kaalka.decrypt(encrypted_message)
 
-print("Encrypted Message:", encrypted_message)
-print("Decrypted Message:", decrypted_message)
-```
-
-### Encryption/Decryption with Explicit Timestamp
-
-```python
-from kaalka import Kaalka
-
-kaalka = Kaalka()
-message = "Hello, world!"
-timestamp = "14:35:22"  # Use a specific time as key
-
+# Text encryption/decryption (explicit time)
+timestamp = "14:35:22"
 encrypted_message = kaalka.encrypt(message, timestamp)
 decrypted_message = kaalka.decrypt(encrypted_message, timestamp)
 
-print("Encrypted Message:", encrypted_message)
-print("Decrypted Message:", decrypted_message)
+# File encryption/decryption (system time)
+encrypted_file = kaalka.encrypt("data.txt")        # Produces data.kaalka (not data.txt.kaalka)
+decrypted_file = kaalka.decrypt(encrypted_file)     # Produces data.txt
+
+# File encryption/decryption (explicit time)
+encrypted_file = kaalka.encrypt("data.txt", timestamp)
+decrypted_file = kaalka.decrypt(encrypted_file, timestamp)
 ```
+
+> **Note:**
+> - Encrypted files use only the `.kaalka` extension (e.g., `data.kaalka`, not `data.txt.kaalka`).
+> - Decrypted files restore the original name and extension (e.g., `data.txt`).
 
 ### KaalkaNTP Usage
 
@@ -86,15 +86,30 @@ kaalka_ntp = KaalkaNTP()
 ## 📂 File Structure
 
 ```
-kaalka_package/
-|-- kaalkaNTP/
+Kaalka-Encryption-Algorithm/
+|-- kaalka/
+|   |-- file_encryptor.py
+|   |-- kaalka.py
 |   |-- __init__.py
+|   |-- __pycache__/
+|-- kaalkaNTP/
 |   |-- kaalkaNTP.py
 |   |-- packet.py
-|-- kaalka/
 |   |-- __init__.py
-|   |-- kaalka.py
+|-- build/
+|   |-- lib/
+|       |-- kaalka/
+|       |-- kaalkaNTP/
+|-- dist/
+|-- kaalka.egg-info/
+|-- LICENSE
+|-- README.md
+|-- requirements.txt
 |-- setup.py
+|-- .github/
+|   |-- workflows/
+|       |-- python-package.yml
+|-- .git/
 ```
 
 ## ⚠️ Security Notes

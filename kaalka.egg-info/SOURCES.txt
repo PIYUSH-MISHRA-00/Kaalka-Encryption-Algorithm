@@ -2,6 +2,7 @@ LICENSE
 README.md
 setup.py
 kaalka/__init__.py
+kaalka/file_encryptor.py
 kaalka/kaalka.py
 kaalka.egg-info/PKG-INFO
 kaalka.egg-info/SOURCES.txt
