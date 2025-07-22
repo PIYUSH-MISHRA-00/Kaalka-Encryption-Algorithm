@@ -103,25 +103,18 @@ class Kaalka {
   }
 
   _proc(data, encrypt) {
-    const [angle_hm, angle_ms, angle_hs] = this._getAngles();
+    // Use integer arithmetic for lossless, reversible byte transformation
+    const h = this.h, m = this.m, s = this.s;
+    const key = (h * 3600 + m * 60 + s) || 1;
     const result = [];
-    const h = this.h,
-      m = this.m,
-      s = this.s;
     for (let idx = 0; idx < data.length; idx++) {
       const b = data[idx];
-      const factor = (h + m + s + idx + 1) || 1;
-      const offset =
-        (this._selectTrig(angle_hm) +
-          this._selectTrig(angle_ms) +
-          this._selectTrig(angle_hs)) *
-          factor +
-        (idx + 1);
+      const offset = (key + idx) % 256;
       let val;
       if (encrypt) {
-        val = (b + Math.round(offset)) % 256;
+        val = (b + offset) % 256;
       } else {
-        val = (b - Math.round(offset)) % 256;
+        val = (b - offset) % 256;
       }
       result.push(val);
     }

@@ -26,7 +26,7 @@ npm install kaalka
 ## 📝 Usage
 
 
-### Unified Text and File Encryption/Decryption
+### Unified Text, Image, and Media Encryption/Decryption
 
 ```js
 const Kaalka = require('./kaalka');
@@ -40,18 +40,30 @@ let decrypted = kaalka.decrypt(encrypted);
 encrypted = kaalka.encrypt("Hello, world!", "14:35:22");
 decrypted = kaalka.decrypt(encrypted, "14:35:22");
 
-// File encryption/decryption (system time)
-let encryptedFile = await kaalka.encrypt("data.txt"); // Produces data.kaalka
-let decryptedFile = await kaalka.decrypt(encryptedFile); // Produces data.txt
+// File encryption/decryption (any file type, system time)
+let encryptedFile = await kaalka.encrypt("test_image.jpg"); // Produces test_image.kaalka
+let decryptedFile = await kaalka.decrypt(encryptedFile); // Produces test_image.jpg
 
 // File encryption/decryption (explicit time)
-encryptedFile = await kaalka.encrypt("data.txt", "14:35:22");
+encryptedFile = await kaalka.encrypt("test_data.csv", "14:35:22");
 decryptedFile = await kaalka.decrypt(encryptedFile, "14:35:22");
+
+// Folder workflow example
+const fs = require('fs').promises;
+const path = require('path');
+const encPath = await kaalka.encrypt("test_image.jpg", "14:35:22");
+await fs.mkdir('encrypted', { recursive: true });
+await fs.mkdir('decrypted', { recursive: true });
+await fs.rename(encPath, path.join('encrypted', 'test_image.kaalka'));
+const decPath = await kaalka.decrypt(path.join('encrypted', 'test_image.kaalka'), "14:35:22");
+await fs.rename(decPath, path.join('decrypted', 'test_image.jpg'));
 ```
 
 > **Note:**
-> - Encrypted files use only the `.kaalka` extension (e.g., `data.kaalka`, not `data.txt.kaalka`).
-> - Decrypted files restore the original name and extension (e.g., `data.txt`).
+> - Encrypted files use only the `.kaalka` extension (e.g., `test_image.kaalka`, `video.kaalka`, `music.kaalka`).
+> - Decrypted files restore the original name and extension (e.g., `test_image.jpg`, `video.mp4`, `music.mp3`).
+> - The library supports all file types, including images, videos, music, text, CSV, JSON, XML, and more.
+> - Encryption and decryption are lossless and robust for all binary formats.
 
 ## ⚠️ Security Notes
 - If you do not provide a timestamp, the current system time is used for encryption and decryption. Encryption and decryption must occur at the same second for the result to be correct.
