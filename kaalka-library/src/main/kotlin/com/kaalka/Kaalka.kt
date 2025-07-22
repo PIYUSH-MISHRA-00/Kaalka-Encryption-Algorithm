@@ -1,3 +1,5 @@
+package com.kaalka
+
 import kotlin.math.*
 import java.time.LocalTime
 
@@ -15,11 +17,11 @@ class Kaalka {
         return try {
             val bytes = java.io.File(inputPath).readBytes()
             val ext = inputPath.substringAfterLast('.', "")
-            val encryptedBytes = encryptBytes(bytes, timeKey)
-            java.io.File(outputPath).writeBytes(encryptedBytes)
-            if (ext.isNotEmpty()) {
-                java.io.File(outputPath + ".ext").writeText(ext)
-            }
+            val encBytes = encryptBytes(bytes, timeKey)
+            val extBytes = ext.toByteArray(Charsets.UTF_8)
+            val extLen = byteArrayOf(extBytes.size.toByte())
+            val finalBytes = extLen + extBytes + encBytes
+            java.io.File(outputPath).writeBytes(finalBytes)
             true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -31,14 +33,14 @@ class Kaalka {
     fun decryptFile(inputPath: String, outputPath: String, timeKey: String? = null): Boolean {
         return try {
             val bytes = java.io.File(inputPath).readBytes()
-            val extFile = java.io.File(inputPath + ".ext")
-            val ext = if (extFile.exists()) extFile.readText() else ""
-            val decryptedBytes = decryptBytes(bytes, timeKey)
-            java.io.File(outputPath).writeBytes(decryptedBytes)
-            if (ext.isNotEmpty()) {
-                val newPath = if (outputPath.endsWith(ext)) outputPath else outputPath + "." + ext
-                java.io.File(outputPath).renameTo(java.io.File(newPath))
-            }
+            if (bytes.isEmpty() || bytes.size < 2) throw IllegalArgumentException("File is too small or corrupted for decryption.")
+            val extLen = bytes[0].toInt()
+            val ext = bytes.slice(1 until 1 + extLen).toByteArray().toString(Charsets.UTF_8)
+            val encData = bytes.slice(1 + extLen until bytes.size).toByteArray()
+            val decBytes = decryptBytes(encData, timeKey)
+            java.io.File(outputPath).writeBytes(decBytes)
+            val newPath = if (outputPath.endsWith(ext)) outputPath else outputPath + if (ext.startsWith(".")) ext else "." + ext
+            java.io.File(outputPath).renameTo(java.io.File(newPath))
             true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -47,26 +49,25 @@ class Kaalka {
     }
 
     // Encrypt raw bytes (for binary/media)
+    // Use integer arithmetic for lossless, reversible byte transformation (for files/media)
+    // Use integer arithmetic for lossless, reversible byte transformation (for files/media)
     fun encryptBytes(data: ByteArray, timeKey: String? = null): ByteArray {
         val (hh, mm, ss) = parseTime(timeKey)
         h = hh; m = mm; s = ss
-        val (angleHm, angleMs, angleHs) = getAngles()
+        val key = (h * 3600 + m * 60 + s).takeIf { it != 0 } ?: 1
         return data.mapIndexed { idx, b ->
-            val factor = (h + m + s + idx + 1).takeIf { it != 0 } ?: 1
-            val offset = (selectTrig(angleHm) + selectTrig(angleMs) + selectTrig(angleHs)) * factor + (idx + 1)
-            ((b.toInt() + offset.roundToInt()) % 256).toByte()
+            val offset = (key + idx) % 256
+            ((b.toInt() + offset) % 256).toByte()
         }.toByteArray()
     }
 
-    // Decrypt raw bytes (for binary/media)
     fun decryptBytes(data: ByteArray, timeKey: String? = null): ByteArray {
         val (hh, mm, ss) = parseTime(timeKey)
         h = hh; m = mm; s = ss
-        val (angleHm, angleMs, angleHs) = getAngles()
+        val key = (h * 3600 + m * 60 + s).takeIf { it != 0 } ?: 1
         return data.mapIndexed { idx, b ->
-            val factor = (h + m + s + idx + 1).takeIf { it != 0 } ?: 1
-            val offset = (selectTrig(angleHm) + selectTrig(angleMs) + selectTrig(angleHs)) * factor + (idx + 1)
-            ((b.toInt() - offset.roundToInt() + 256) % 256).toByte()
+            val offset = (key + idx) % 256
+            ((b.toInt() - offset + 256) % 256).toByte()
         }.toByteArray()
     }
 

@@ -1,3 +1,6 @@
+
+package com.kaalka
+
 import java.net.InetAddress
 import org.apache.commons.net.ntp.NTPUDPClient
 import org.apache.commons.net.ntp.TimeInfo
