@@ -48,6 +48,10 @@ class Kaalka:
             outfile = base + '.kaalka'
             with open(outfile, 'wb') as f:
                 f.write(final)
+            # Debug: Save original bytes for comparison next to output file
+            debug_orig = outfile + '.debug_orig'
+            with open(debug_orig, 'wb') as f:
+                f.write(raw)
             return outfile
         else:
             self._set_time(time_key)
@@ -65,6 +69,15 @@ class Kaalka:
             outfile = base + ext if not base.endswith(ext) else base
             with open(outfile, 'wb') as f:
                 f.write(dec_bytes)
+            # Debug: Compare original and decrypted bytes if debug_orig exists
+            debug_orig = data + '.debug_orig'
+            if os.path.exists(debug_orig):
+                with open(debug_orig, 'rb') as f:
+                    orig_bytes = f.read()
+                if orig_bytes != dec_bytes:
+                    print(f"[Kaalka DEBUG] Byte mismatch in {outfile}: {sum(a!=b for a,b in zip(orig_bytes, dec_bytes))} mismatches, length orig={len(orig_bytes)}, dec={len(dec_bytes)}")
+                else:
+                    print(f"[Kaalka DEBUG] Byte match for {outfile}")
             return outfile
         else:
             self._set_time(time_key)
@@ -93,20 +106,16 @@ class Kaalka:
             return 1 / tan_val if tan_val != 0 else 0
 
     def _proc(self, data, encrypt):
-        angle_hm, angle_ms, angle_hs = self._get_angles()
-        result = bytearray()
+        # Use integer arithmetic for lossless, reversible byte transformation
         h, m, s = self.h, self.m, self.s
+        key = (h * 3600 + m * 60 + s) or 1
+        result = bytearray()
         for idx, b in enumerate(data):
-            factor = (h + m + s + idx + 1) or 1
-            offset = (
-                self._select_trig(angle_hm) +
-                self._select_trig(angle_ms) +
-                self._select_trig(angle_hs)
-            ) * factor + (idx + 1)
+            offset = (key + idx) % 256
             if encrypt:
-                val = (b + int(round(offset))) % 256
+                val = (b + offset) % 256
             else:
-                val = (b - int(round(offset))) % 256
+                val = (b - offset) % 256
             result.append(val)
         return bytes(result)
 

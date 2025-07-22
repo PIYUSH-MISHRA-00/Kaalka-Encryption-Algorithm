@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name='kaalka',
-    version='3.0',
+    version='4.0.0',
     packages=find_packages(),
     install_requires=[
         'ntplib'
@@ -18,4 +18,5 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url='https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm/tree/python',
+    license='Custom',
 )

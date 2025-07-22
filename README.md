@@ -26,7 +26,7 @@ pip install kaalka
 ## 📝 Usage
 
 
-### Unified Text and File Encryption/Decryption
+### Unified Text, Image, and Media Encryption/Decryption
 
 ```python
 from kaalka import Kaalka
@@ -42,18 +42,29 @@ timestamp = "14:35:22"
 encrypted_message = kaalka.encrypt(message, timestamp)
 decrypted_message = kaalka.decrypt(encrypted_message, timestamp)
 
-# File encryption/decryption (system time)
-encrypted_file = kaalka.encrypt("data.txt")        # Produces data.kaalka (not data.txt.kaalka)
-decrypted_file = kaalka.decrypt(encrypted_file)     # Produces data.txt
+# File encryption/decryption (any file type, system time)
+encrypted_file = kaalka.encrypt("test_image.jpg")        # Produces test_image.kaalka
+decrypted_file = kaalka.decrypt(encrypted_file)           # Produces test_image.jpg
 
 # File encryption/decryption (explicit time)
-encrypted_file = kaalka.encrypt("data.txt", timestamp)
+encrypted_file = kaalka.encrypt("test_data.csv", timestamp)
 decrypted_file = kaalka.decrypt(encrypted_file, timestamp)
+
+# Folder workflow example
+import os, shutil
+os.makedirs('encrypted', exist_ok=True)
+os.makedirs('decrypted', exist_ok=True)
+enc_path = kaalka.encrypt("test_image.jpg", timestamp)
+shutil.move(enc_path, f'encrypted/test_image.kaalka')
+dec_path = kaalka.decrypt('encrypted/test_image.kaalka', timestamp)
+shutil.move(dec_path, f'decrypted/test_image.jpg')
 ```
 
 > **Note:**
-> - Encrypted files use only the `.kaalka` extension (e.g., `data.kaalka`, not `data.txt.kaalka`).
-> - Decrypted files restore the original name and extension (e.g., `data.txt`).
+> - Encrypted files use only the `.kaalka` extension (e.g., `test_image.kaalka`, `video.kaalka`, `music.kaalka`).
+> - Decrypted files restore the original name and extension (e.g., `test_image.jpg`, `video.mp4`, `music.mp3`).
+> - The library supports all file types, including images, videos, music, text, CSV, JSON, XML, and more.
+> - Encryption and decryption are lossless and robust for all binary formats.
 
 ### KaalkaNTP Usage
 
