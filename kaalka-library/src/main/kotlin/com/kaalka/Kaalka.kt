@@ -10,6 +10,66 @@ class Kaalka {
         updateTimestamp()
     }
 
+    // Encrypt a file (text or binary)
+    fun encryptFile(inputPath: String, outputPath: String, timeKey: String? = null): Boolean {
+        return try {
+            val bytes = java.io.File(inputPath).readBytes()
+            val ext = inputPath.substringAfterLast('.', "")
+            val encryptedBytes = encryptBytes(bytes, timeKey)
+            java.io.File(outputPath).writeBytes(encryptedBytes)
+            if (ext.isNotEmpty()) {
+                java.io.File(outputPath + ".ext").writeText(ext)
+            }
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    // Decrypt a file (text or binary)
+    fun decryptFile(inputPath: String, outputPath: String, timeKey: String? = null): Boolean {
+        return try {
+            val bytes = java.io.File(inputPath).readBytes()
+            val extFile = java.io.File(inputPath + ".ext")
+            val ext = if (extFile.exists()) extFile.readText() else ""
+            val decryptedBytes = decryptBytes(bytes, timeKey)
+            java.io.File(outputPath).writeBytes(decryptedBytes)
+            if (ext.isNotEmpty()) {
+                val newPath = if (outputPath.endsWith(ext)) outputPath else outputPath + "." + ext
+                java.io.File(outputPath).renameTo(java.io.File(newPath))
+            }
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    // Encrypt raw bytes (for binary/media)
+    fun encryptBytes(data: ByteArray, timeKey: String? = null): ByteArray {
+        val (hh, mm, ss) = parseTime(timeKey)
+        h = hh; m = mm; s = ss
+        val (angleHm, angleMs, angleHs) = getAngles()
+        return data.mapIndexed { idx, b ->
+            val factor = (h + m + s + idx + 1).takeIf { it != 0 } ?: 1
+            val offset = (selectTrig(angleHm) + selectTrig(angleMs) + selectTrig(angleHs)) * factor + (idx + 1)
+            ((b.toInt() + offset.roundToInt()) % 256).toByte()
+        }.toByteArray()
+    }
+
+    // Decrypt raw bytes (for binary/media)
+    fun decryptBytes(data: ByteArray, timeKey: String? = null): ByteArray {
+        val (hh, mm, ss) = parseTime(timeKey)
+        h = hh; m = mm; s = ss
+        val (angleHm, angleMs, angleHs) = getAngles()
+        return data.mapIndexed { idx, b ->
+            val factor = (h + m + s + idx + 1).takeIf { it != 0 } ?: 1
+            val offset = (selectTrig(angleHm) + selectTrig(angleMs) + selectTrig(angleHs)) * factor + (idx + 1)
+            ((b.toInt() - offset.roundToInt() + 256) % 256).toByte()
+        }.toByteArray()
+    }
+
     private fun updateTimestamp() {
         val now = LocalTime.now()
         h = now.hour % 12
