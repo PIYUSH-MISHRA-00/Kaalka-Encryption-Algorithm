@@ -57,17 +57,17 @@ public class Kaalka {
 
     // Core byte encryption/decryption logic
     private byte[] proc(byte[] data, boolean encrypt) {
-        double[] angles = getAngles();
+        // Use integer arithmetic for lossless, reversible byte transformation (for files/media)
+        int key = (h * 3600 + m * 60 + s) == 0 ? 1 : (h * 3600 + m * 60 + s);
         byte[] result = new byte[data.length];
         for (int idx = 0; idx < data.length; idx++) {
             int b = data[idx] & 0xFF;
-            int factor = (h + m + s + idx + 1) == 0 ? 1 : (h + m + s + idx + 1);
-            double offset = (selectTrig(angles[0]) + selectTrig(angles[1]) + selectTrig(angles[2])) * factor + (idx + 1);
+            int offset = (key + idx) % 256;
             int val;
             if (encrypt) {
-                val = (b + (int) Math.round(offset)) % 256;
+                val = (b + offset) % 256;
             } else {
-                val = (b - (int) Math.round(offset) + 256) % 256;
+                val = (b - offset + 256) % 256;
             }
             result[idx] = (byte) val;
         }

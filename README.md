@@ -1,12 +1,13 @@
+
 # Kaalka Package for Java
 
-Robust, timestamp-based encryption for Java, compatible with Python, Dart, and JavaScript implementations. Uses angles and trigonometric functions derived from timestamps for strong, time-dependent encryption.
+Robust, timestamp-based encryption for Java, compatible with Python, Dart, and JavaScript implementations. Uses angles and trigonometric functions for text, and integer arithmetic for file/media encryption, ensuring lossless, reversible results for all file types (images, binary, etc.).
 
 ## Features
-- **Robust encryption** using timestamp-based keys (angles, trigonometric functions)
+- **Robust encryption** using timestamp-based keys (angles, trigonometric functions for text; integer arithmetic for files/media)
 - **Cross-platform**: Compatible with Python, Dart, and Node.js Kaalka implementations
 - **Flexible API**: Use system time, NTP, or custom timestamp for encryption/decryption
-- **File/media support**: Encrypt/decrypt any file or media type (text, binary, images, etc.)
+- **File/media support**: Encrypt/decrypt any file or media type (text, binary, images, etc.) with lossless, reversible results
 - **Extension handling**: Encrypted files use `.kaalka`, decrypted files restore original extension
 - **Packet support**: Example wrapper for secure message packets
 
@@ -73,8 +74,8 @@ public class Main {
         System.out.println("Decrypted Message: " + decryptedMessage);
 
         // File/media encryption/decryption
-        String encryptedFile = kaalka.encryptFile("photo.jpg", "10:20:30"); // Produces photo.kaalka
-        String decryptedFile = kaalka.decryptFile(encryptedFile, "10:20:30"); // Produces photo.jpg
+        String encryptedFile = kaalka.encryptFile("test_image.jpg", "10:20:30"); // Produces test_image.kaalka
+        String decryptedFile = kaalka.decryptFile(encryptedFile, "10:20:30"); // Produces test_image.jpg
         System.out.println("Encrypted File: " + encryptedFile);
         System.out.println("Decrypted File: " + decryptedFile);
 
@@ -129,5 +130,5 @@ The JAR will be in `build/libs/`.
 - Accepts `int` (seconds), `String` (`HH:MM:SS`, `MM:SS`, or `SS`)
 - If omitted, uses current system time
 
-## Compatibility
 - Compatible with [Python](https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm), [Dart](https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm), and [Node.js](https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm) Kaalka libraries
+  - Java v4.0.0 uses integer arithmetic for file/media encryption, matching Python/JavaScript/Dart for robust, lossless results.
