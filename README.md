@@ -7,9 +7,8 @@
   <img src="https://img.shields.io/badge/dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white">
 </div>
 
-<div align="center">
-  <a href="https://doi.org/10.5281/zenodo.8170382"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.8170382.svg" alt="DOI"></a>
-</div>
+<a href="https://doi.org/10.5281/zenodo.8170382"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.8170382.svg" alt="DOI"></a>
+
 
 # Kaalka Encryption Algorithm
 
