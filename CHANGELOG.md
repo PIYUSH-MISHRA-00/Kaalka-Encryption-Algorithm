@@ -1,5 +1,25 @@
 # Changelog
 
+## [3.0.0] - 2025-07-22
+### Added
+- Media/file encryption and decryption (supports any file type: text, binary, images, etc.)
+- Default time as system time, with explicit time override
+- NTP time support and packet wrapper
+- Robust error handling and input validation
+- Thorough test suite for text, binary, UTF-8, large, and media files
+- Improved documentation and usage examples
+
+### Changed
+- API fully matches Python and JavaScript versions
+- Extension handling for encrypted/decrypted files
+- All code errors and warnings removed
+
+### Fixed
+- Deprecated patterns and issues resolved
+- All tests pass with zero errors
+
+---
+
 ## [2.0.0] - 2025-06-29
 ### Added
 - Robust, timestamp-based encryption using angles and trigonometric functions

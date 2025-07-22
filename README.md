@@ -1,3 +1,4 @@
+
 # Kaalka Encryption Algorithm for Dart
 
 Robust, timestamp-based encryption for Dart, compatible with Python and JavaScript implementations. Uses angles and trigonometric functions derived from timestamps for strong, time-dependent encryption.
@@ -6,6 +7,8 @@ Robust, timestamp-based encryption for Dart, compatible with Python and JavaScri
 - **Robust encryption** using timestamp-based keys (angles, trigonometric functions)
 - **Cross-platform**: Compatible with Python and Node.js Kaalka implementations
 - **Flexible API**: Use system time, NTP, or custom timestamp for encryption/decryption
+- **File/media support**: Encrypt/decrypt any file or media type (text, binary, images, etc.)
+- **Extension handling**: Encrypted files use `.kaalka`, decrypted files restore original extension
 - **Packet support**: Example wrapper for secure message packets
 
 ## Installation
@@ -16,73 +19,70 @@ dependencies:
   kaalka:
     git:
       url: https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm.git
+      path: lib
 ```
 
 ## Usage
 
-### Basic Encryption/Decryption
+### Text Encryption/Decryption
 ```dart
 import 'package:kaalka/kaalka.dart';
 
-void main() {
+void main() async {
   final kaalka = Kaalka(); // Uses current system time
   final message = 'Hello, Kaalka!';
-  final encrypted = kaalka.encrypt(message); // Encrypt with current time
-  final decrypted = kaalka.decrypt(encrypted); // Decrypt with same time
-  print('Encrypted: $encrypted');
-  print('Decrypted: $decrypted');
+  final encrypted = await kaalka.encrypt(message); // Encrypt with current time
+  final decrypted = await kaalka.decrypt(encrypted); // Decrypt with same time
+
+  // Explicit time
+  final encrypted2 = await kaalka.encrypt(message, timeKey: '14:35:22');
+  final decrypted2 = await kaalka.decrypt(encrypted2, timeKey: '14:35:22');
 }
 ```
 
-### Using a Custom Timestamp
+### File/Media Encryption/Decryption
 ```dart
 import 'package:kaalka/kaalka.dart';
 
-final kaalka = Kaalka('10:15:30'); // HH:MM:SS, MM:SS, or SS
-final encrypted = kaalka.encrypt('Secret', '10:15:30');
-final decrypted = kaalka.decrypt(encrypted, '10:15:30');
+void main() async {
+  final kaalka = Kaalka();
+  // Encrypt a file (any type)
+  final encryptedFile = await kaalka.encrypt('photo.jpg'); // Produces photo.kaalka
+  // Decrypt the file
+  final decryptedFile = await kaalka.decrypt(encryptedFile); // Produces photo.jpg
+}
 ```
 
-### Using KaalkaNTP (NTP time, async)
+### NTP Time Support
 ```dart
 import 'package:kaalka/kaalka_ntp.dart';
 
 void main() async {
-  final encrypted = await KaalkaNTP.encryptWithNtp('Hello!');
+  final encrypted = await KaalkaNTP.encryptWithNtp('NTP message');
   final decrypted = await KaalkaNTP.decryptWithNtp(encrypted);
-  print('Encrypted: $encrypted');
-  print('Decrypted: $decrypted');
 }
 ```
 
-### Packet Example
+### Packet Wrapper
 ```dart
 import 'package:kaalka/packet.dart';
 
-final packet = Packet('Payload', timeKey: '12:34:56');
-packet.encrypt();
-final decrypted = packet.decrypt();
+void main() {
+  final packet = Packet('Packet payload', timeKey: '03:21:09');
+  packet.encrypt();
+  final decrypted = packet.decrypt();
+}
 ```
 
-## API Reference
+## Notes
+- Encrypted files use only the `.kaalka` extension (e.g., `photo.kaalka`)
+- Decrypted files restore the original name and extension (e.g., `photo.jpg`)
+- Encryption and decryption must use the same timestamp
+- Supports any file/media type (text, binary, images, etc.)
 
-### Kaalka
-- `Kaalka([dynamic timeKey])` — Create instance with optional timestamp
-- `String encrypt(String data, [dynamic timeKey])` — Encrypt data
-- `String decrypt(String encrypted, [dynamic timeKey])` — Decrypt data
+## License
+See LICENSE file for details.
 
-### KaalkaNTP
-- `static Future<String> encryptWithNtp(String data, {dynamic timeKey})`
-- `static Future<String> decryptWithNtp(String data, {dynamic timeKey})`
-
-### Packet
-- `Packet(String data, {dynamic timeKey})`
-- `void encrypt()`
-- `String decrypt()`
-
-## Timestamp Format
-- Accepts `int` (seconds), `String` (`HH:MM:SS`, `MM:SS`, or `SS`)
-- If omitted, uses current system time
-
-## Compatibility
+## Contributing
+Contributions, bug reports, and feature requests are welcome! Please open an issue or submit a pull request on GitHub.
 - Compatible with [Python](https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm) and [Node.js](https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm) Kaalka libraries

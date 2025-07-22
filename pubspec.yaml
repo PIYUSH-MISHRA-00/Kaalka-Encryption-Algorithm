@@ -1,13 +1,12 @@
 
 name: kaalka
-description: For encryption and decryption using Kaalka and KaalkaNTP.
-version: 2.0.0
-homepage: https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm/tree/Dart
+version: 3.0.0
+description: Kaalka encryption algorithm for Dart. Time-based encryption for text and files using clock hand angles and trigonometric functions.
+homepage: https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm
+repository: https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm
 environment:
-  sdk: '>=2.12.0 <4.0.0'
+  sdk: '>=2.17.0 <4.0.0'
 dependencies:
-  ntp: ^2.0.0
-  flutter:
-    sdk: flutter
+  path: any
 dev_dependencies:
-  test: ^1.0.0
+  test: ^1.24.0

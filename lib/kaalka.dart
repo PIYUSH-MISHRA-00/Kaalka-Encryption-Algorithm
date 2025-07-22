@@ -1,135 +1,152 @@
+import 'dart:io';
 import 'dart:math';
-import 'dart:core';
+import 'dart:convert';
 
-/// Kaalka Encryption Algorithm (Dart)
-/// Robust, timestamp-based encryption using angles and trigonometric functions.
-/// Compatible with Python/JS implementations.
 class Kaalka {
-  int h = 0;
-  int m = 0;
-  int s = 0;
+  late int h, m, s;
 
-  /// Create a Kaalka instance. If [timeKey] is provided, uses it as the timestamp.
-  Kaalka([dynamic timeKey]) {
-    if (timeKey != null) {
-      _parseTime(timeKey);
-    } else {
-      _updateTimestamp();
-    }
+  Kaalka({DateTime? time}) {
+    final now = time ?? DateTime.now();
+    this.h = now.hour % 12;
+    this.m = now.minute;
+    this.s = now.second;
   }
 
-  /// Update h, m, s to current system time (local).
-  void _updateTimestamp() {
-    final now = DateTime.now();
-    h = now.hour % 12;
-    m = now.minute;
-    s = now.second;
-  }
-
-  /// Parse a time key (int seconds, or string 'HH:MM:SS', 'MM:SS', 'SS').
-  void _parseTime(dynamic timeKey) {
-    if (timeKey is int) {
-      h = 0;
-      m = 0;
-      s = timeKey;
-    } else if (timeKey is String) {
-      final parts = timeKey.split(":").map(int.parse).toList();
+  void _setTime(String? timeKey) {
+    if (timeKey != null && timeKey.isNotEmpty) {
+      final parts = timeKey.split(':');
+      int hh = 0, mm = 0, ss = 0;
       if (parts.length == 3) {
-        h = parts[0] % 12;
-        m = parts[1];
-        s = parts[2];
+        hh = int.parse(parts[0]);
+        mm = int.parse(parts[1]);
+        ss = int.parse(parts[2]);
       } else if (parts.length == 2) {
-        h = 0;
-        m = parts[0];
-        s = parts[1];
+        mm = int.parse(parts[0]);
+        ss = int.parse(parts[1]);
       } else if (parts.length == 1) {
-        h = 0;
-        m = 0;
-        s = parts[0];
-      } else {
-        throw ArgumentError("Invalid time format. Use HH:MM:SS, MM:SS, or SS.");
+        ss = int.parse(parts[0]);
       }
-    } else {
-      throw ArgumentError("Invalid time format. Use HH:MM:SS, MM:SS, or SS.");
+      this.h = hh % 12;
+      this.m = mm;
+      this.s = ss;
     }
   }
 
-  /// Encrypt [data] using the current or provided timestamp.
-  String encrypt(String data, [dynamic timeKey]) {
-    if (timeKey != null) {
-      _parseTime(timeKey);
-    } else {
-      _updateTimestamp();
+  Future<String> encrypt(dynamic data, {String? timeKey}) async {
+    _setTime(timeKey);
+    // File or media encryption
+    if (data is String && await File(data).exists()) {
+      final file = File(data);
+      final ext = '.' + data.split('.').last;
+      final raw = await file.readAsBytes();
+      final encBytes = _proc(raw, true);
+      final extBytes = utf8.encode(ext);
+      final extLen = [extBytes.length];
+      final finalBytes = <int>[]..addAll(extLen)..addAll(extBytes)..addAll(encBytes);
+      final base = data.substring(0, data.length - ext.length);
+      final outfile = base + '.kaalka';
+      await File(outfile).writeAsBytes(finalBytes);
+      return outfile;
     }
-    return _encryptMessage(data);
+    // Text encryption
+    if (data is String) {
+      return _encryptMessage(data);
+    }
+    // Binary encryption
+    if (data is List<int>) {
+      return utf8.decode(_proc(data, true));
+    }
+    throw ArgumentError('Unsupported data type for encryption.');
   }
 
-  /// Decrypt [encryptedMessage] using the current or provided timestamp.
-  String decrypt(String encryptedMessage, [dynamic timeKey]) {
-    if (timeKey != null) {
-      _parseTime(timeKey);
-    } else {
-      _updateTimestamp();
+  Future<dynamic> decrypt(dynamic data, {String? timeKey}) async {
+    _setTime(timeKey);
+    // File or media decryption
+    if (data is String && await File(data).exists()) {
+      final file = File(data);
+      final buf = await file.readAsBytes();
+      if (buf.isEmpty || buf.length < 2) {
+        throw ArgumentError('File is too small or corrupted for decryption.');
+      }
+      final extLen = buf[0];
+      final ext = utf8.decode(buf.sublist(1, 1 + extLen));
+      final encData = buf.sublist(1 + extLen);
+      final decBytes = _proc(encData, false);
+      final base = data.substring(0, data.length - '.kaalka'.length);
+      final outfile = base + ext;
+      await File(outfile).writeAsBytes(decBytes);
+      return outfile;
     }
-    return _decryptMessage(encryptedMessage);
+    // Text decryption
+    if (data is String) {
+      return _decryptMessage(data);
+    }
+    // Binary decryption
+    if (data is List<int>) {
+      return utf8.decode(_proc(data, false));
+    }
+    throw ArgumentError('Unsupported data type for decryption.');
   }
 
-  /// Calculate angles between clock hands for the timestamp.
   List<double> _getAngles() {
-    final hourAngle = (30 * h) + (0.5 * m) + (0.5 / 60 * s);
-    final minuteAngle = (6 * m) + (0.1 * s);
+    final hourAngle = 30 * h + 0.5 * m + (0.5 / 60) * s;
+    final minuteAngle = 6 * m + 0.1 * s;
     final secondAngle = 6 * s;
-    final angleHm = min((hourAngle - minuteAngle).abs(), 360 - (hourAngle - minuteAngle).abs());
-    final angleMs = min((minuteAngle - secondAngle).abs(), 360 - (minuteAngle - secondAngle).abs());
-    final angleHs = min((hourAngle - secondAngle).abs(), 360 - (hourAngle - secondAngle).abs());
-    return [angleHm, angleMs, angleHs];
+    final angle_hm = min((hourAngle - minuteAngle).abs(), 360 - (hourAngle - minuteAngle).abs());
+    final angle_ms = min((minuteAngle - secondAngle).abs(), 360 - (minuteAngle - secondAngle).abs());
+    final angle_hs = min((hourAngle - secondAngle).abs(), 360 - (hourAngle - secondAngle).abs());
+    return [angle_hm, angle_ms, angle_hs];
   }
 
-  /// Select a trigonometric function based on the quadrant of [angle].
   double _selectTrig(double angle) {
-    final quadrant = (angle ~/ 90) + 1;
     final rad = angle * pi / 180;
-    if (quadrant == 1) {
-      return sin(rad);
-    } else if (quadrant == 2) {
-      return cos(rad);
-    } else if (quadrant == 3) {
-      return tan(rad);
-    } else {
-      final tanVal = tan(rad);
-      return tanVal != 0 ? 1 / tanVal : 0;
-    }
+    final quadrant = (angle ~/ 90) + 1;
+    if (quadrant == 1) return sin(rad);
+    if (quadrant == 2) return cos(rad);
+    if (quadrant == 3) return tan(rad);
+    final tanVal = tan(rad);
+    return tanVal != 0 ? 1 / tanVal : 0;
   }
 
-  /// Internal: encrypt message string.
+  List<int> _proc(List<int> data, bool encrypt) {
+    final angles = _getAngles();
+    final result = <int>[];
+    for (var idx = 0; idx < data.length; idx++) {
+      final b = data[idx];
+      final factor = (h + m + s + idx + 1) == 0 ? 1 : (h + m + s + idx + 1);
+      final offset = (angles.map(_selectTrig).reduce((a, b) => a + b)) * factor + (idx + 1);
+      int val;
+      if (encrypt) {
+        val = (b + offset.round()) % 256;
+      } else {
+        val = (b - offset.round()) % 256;
+      }
+      result.add(val);
+    }
+    return result;
+  }
+
   String _encryptMessage(String data) {
     final angles = _getAngles();
-    final angleHm = angles[0];
-    final angleMs = angles[1];
-    final angleHs = angles[2];
-    final buffer = StringBuffer();
+    var encrypted = '';
     for (var idx = 0; idx < data.length; idx++) {
       final c = data.codeUnitAt(idx);
       final factor = (h + m + s + idx + 1) == 0 ? 1 : (h + m + s + idx + 1);
-      final offset = (_selectTrig(angleHm) + _selectTrig(angleMs) + _selectTrig(angleHs)) * factor + (idx + 1);
-      buffer.writeCharCode((c + offset.round()) % 256);
+      final offset = (angles.map(_selectTrig).reduce((a, b) => a + b)) * factor + (idx + 1);
+      encrypted += String.fromCharCode((c + offset.round()) % 256);
     }
-    return buffer.toString();
+    return encrypted;
   }
 
-  /// Internal: decrypt message string.
-  String _decryptMessage(String encryptedMessage) {
+  String _decryptMessage(String data) {
     final angles = _getAngles();
-    final angleHm = angles[0];
-    final angleMs = angles[1];
-    final angleHs = angles[2];
-    final buffer = StringBuffer();
-    for (var idx = 0; idx < encryptedMessage.length; idx++) {
-      final c = encryptedMessage.codeUnitAt(idx);
+    var decrypted = '';
+    for (var idx = 0; idx < data.length; idx++) {
+      final c = data.codeUnitAt(idx);
       final factor = (h + m + s + idx + 1) == 0 ? 1 : (h + m + s + idx + 1);
-      final offset = (_selectTrig(angleHm) + _selectTrig(angleMs) + _selectTrig(angleHs)) * factor + (idx + 1);
-      buffer.writeCharCode((c - offset.round() + 256) % 256);
+      final offset = (angles.map(_selectTrig).reduce((a, b) => a + b)) * factor + (idx + 1);
+      decrypted += String.fromCharCode((c - offset.round()) % 256);
     }
-    return buffer.toString();
+    return decrypted;
   }
 }

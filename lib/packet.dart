@@ -11,16 +11,29 @@ class Packet {
   Packet(this.data, {this.timeKey});
 
   /// Encrypt the packet data.
-  void encrypt() {
-    final k = Kaalka(timeKey);
-    encrypted = k.encrypt(data);
+  Future<void> encrypt() async {
+    final k = Kaalka(time: _parseTimeKey(timeKey));
+    encrypted = await k.encrypt(data);
   }
 
   /// Decrypt the packet data.
-  String decrypt() {
+  Future<String> decrypt() async {
     if (encrypted == null) throw Exception('No encrypted data');
-    final k = Kaalka(timeKey);
-    return k.decrypt(encrypted!);
+    final k = Kaalka(time: _parseTimeKey(timeKey));
+    return await k.decrypt(encrypted!);
+  }
+
+  DateTime? _parseTimeKey(dynamic timeKey) {
+    if (timeKey == null) return null;
+    if (timeKey is DateTime) return timeKey;
+    if (timeKey is String) {
+      final parts = timeKey.split(':');
+      if (parts.length == 3) {
+        final now = DateTime.now();
+        return DateTime(now.year, now.month, now.day, int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
+      }
+    }
+    return null;
   }
 
   static void sender() {

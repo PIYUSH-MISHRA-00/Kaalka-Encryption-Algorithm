@@ -3,10 +3,10 @@ import 'package:kaalka/packet.dart';
 
 void main() {
   group('Packet', () {
-    test('Encrypt/Decrypt with Packet', () {
+    test('Encrypt/Decrypt with Packet', () async {
       final packet = Packet('Packet payload', timeKey: '03:21:09');
-      packet.encrypt();
-      final decrypted = packet.decrypt();
+      await packet.encrypt();
+      final decrypted = await packet.decrypt();
       expect(decrypted, equals('Packet payload'));
       expect(packet.encrypted, isNotNull);
     });
