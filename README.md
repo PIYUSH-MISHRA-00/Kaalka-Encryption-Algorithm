@@ -25,62 +25,36 @@ npm install kaalka
 
 ## 📝 Usage
 
-### Basic Encryption/Decryption (System Time)
+
+### Unified Text and File Encryption/Decryption
 
 ```js
-const Kaalka = require('kaalka');
+const Kaalka = require('./kaalka');
 const kaalka = new Kaalka();
-const message = "Hello, world!";
-const encrypted = kaalka.encrypt(message); // Uses current system time as key
-const decrypted = kaalka.decrypt(encrypted); // Uses current system time
-console.log("Encrypted Message:", encrypted);
-console.log("Decrypted Message:", decrypted);
+
+// Text encryption/decryption (system time)
+let encrypted = kaalka.encrypt("Hello, world!");
+let decrypted = kaalka.decrypt(encrypted);
+
+// Text encryption/decryption (explicit time)
+encrypted = kaalka.encrypt("Hello, world!", "14:35:22");
+decrypted = kaalka.decrypt(encrypted, "14:35:22");
+
+// File encryption/decryption (system time)
+let encryptedFile = await kaalka.encrypt("data.txt"); // Produces data.kaalka
+let decryptedFile = await kaalka.decrypt(encryptedFile); // Produces data.txt
+
+// File encryption/decryption (explicit time)
+encryptedFile = await kaalka.encrypt("data.txt", "14:35:22");
+decryptedFile = await kaalka.decrypt(encryptedFile, "14:35:22");
 ```
 
-### Encryption/Decryption with Explicit Timestamp
-
-```js
-const Kaalka = require('kaalka');
-const kaalka = new Kaalka();
-const message = "Hello, world!";
-const timestamp = "14:35:22"; // Use a specific time as key
-const encrypted = kaalka.encrypt(message, timestamp);
-const decrypted = kaalka.decrypt(encrypted, timestamp);
-console.log("Encrypted Message:", encrypted);
-console.log("Decrypted Message:", decrypted);
-```
-
-### NTP-Based Encryption/Decryption (Async)
-
-```js
-const KaalkaNTP = require('kaalka/kaalkaNTP');
-(async () => {
-  const kaalkaNtp = new KaalkaNTP();
-  const message = "Hello, Kaalka!";
-  const encrypted = await kaalkaNtp.encrypt(message); // Uses NTP time
-  const decrypted = await kaalkaNtp.decrypt(encrypted); // Uses NTP time
-  console.log("Encrypted Message:", encrypted);
-  console.log("Decrypted Message:", decrypted);
-})();
-```
-
-### Packet Example (Async)
-
-```js
-const KaalkaNTP = require('kaalka/kaalkaNTP');
-const Packet = require('kaalka/packet');
-(async () => {
-  const kaalkaInstance = new KaalkaNTP();
-  const packet = new Packet("Hello, Kaalka!");
-  await packet.encrypt(kaalkaInstance);
-  console.log("Encrypted Data:", packet.encryptedData);
-  await packet.decrypt(kaalkaInstance);
-  console.log("Decrypted Data:", packet.data);
-})();
-```
+> **Note:**
+> - Encrypted files use only the `.kaalka` extension (e.g., `data.kaalka`, not `data.txt.kaalka`).
+> - Decrypted files restore the original name and extension (e.g., `data.txt`).
 
 ## ⚠️ Security Notes
-- If you do not provide a timestamp, the current system or NTP time is used for encryption and decryption. Encryption and decryption must occur at the same second for the result to be correct.
+- If you do not provide a timestamp, the current system time is used for encryption and decryption. Encryption and decryption must occur at the same second for the result to be correct.
 - For reproducibility and secure communication, always provide an explicit timestamp string (format: 'HH:MM:SS').
 - The strength of encryption depends on the secrecy and unpredictability of the timestamp used.
 

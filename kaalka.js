@@ -1,96 +1,131 @@
+const fs = require("fs").promises;
 const math = require("mathjs");
+const path = require("path");
 
 class Kaalka {
   constructor() {
-    this.h = 0;
-    this.m = 0;
-    this.s = 0;
-    this._updateTimestamp();
-  }
-
-  _updateTimestamp() {
     const now = new Date();
     this.h = now.getHours() % 12;
     this.m = now.getMinutes();
     this.s = now.getSeconds();
   }
 
-  _parseTime(timeStr) {
-    if (typeof timeStr === "number") {
-      return { h: 0, m: 0, s: timeStr };
-    } else if (typeof timeStr === "string") {
-      const parts = timeStr.split(":").map(Number);
+  _setTime(timeKey) {
+    if (timeKey) {
+      const parts = String(timeKey).split(":");
+      let h = 0,
+        m = 0,
+        s = 0;
       if (parts.length === 3) {
-        return { h: parts[0] % 12, m: parts[1], s: parts[2] };
+        h = parseInt(parts[0]);
+        m = parseInt(parts[1]);
+        s = parseInt(parts[2]);
       } else if (parts.length === 2) {
-        return { h: 0, m: parts[0], s: parts[1] };
+        m = parseInt(parts[0]);
+        s = parseInt(parts[1]);
       } else if (parts.length === 1) {
-        return { h: 0, m: 0, s: parts[0] };
-      } else {
-        throw new Error("Invalid time format. Use HH:MM:SS, MM:SS, or SS.");
+        s = parseInt(parts[0]);
       }
-    } else {
-      throw new Error("Invalid time format. Use HH:MM:SS, MM:SS, or SS.");
+      this.h = h % 12;
+      this.m = m;
+      this.s = s;
     }
   }
 
-  encrypt(data, timeKey = null) {
-    if (timeKey !== null && typeof timeKey !== "undefined") {
-      const { h, m, s } = this._parseTime(timeKey);
-      this.h = h;
-      this.m = m;
-      this.s = s;
+  async encrypt(data, timeKey) {
+    if (typeof data === "string" && (await this._isFile(data))) {
+      const ext = path.extname(data);
+      const raw = await fs.readFile(data);
+      this._setTime(timeKey);
+      const encBytes = this._proc(raw, true);
+      const extBytes = Buffer.from(ext, "utf8");
+      const extLen = Buffer.from([extBytes.length]);
+      const final = Buffer.concat([extLen, extBytes, encBytes]);
+      const base = path.join(path.dirname(data), path.basename(data, ext));
+      const outfile = base + ".kaalka";
+      await fs.writeFile(outfile, final);
+      return outfile;
     } else {
-      this._updateTimestamp();
+      this._setTime(timeKey);
+      return this._encryptMessage(data);
     }
-    return this._encryptMessage(data);
   }
 
-  decrypt(encryptedMessage, timeKey = null) {
-    if (timeKey !== null && typeof timeKey !== "undefined") {
-      const { h, m, s } = this._parseTime(timeKey);
-      this.h = h;
-      this.m = m;
-      this.s = s;
+  async decrypt(data, timeKey) {
+    if (typeof data === "string" && (await this._isFile(data))) {
+      const buf = await fs.readFile(data);
+      const extLen = buf[0];
+      const ext = buf.slice(1, 1 + extLen).toString("utf8");
+      const encData = buf.slice(1 + extLen);
+      this._setTime(timeKey);
+      const decBytes = this._proc(encData, false);
+      const base = path.join(
+        path.dirname(data),
+        path.basename(data, ".kaalka")
+      );
+      const outfile = base + ext;
+      await fs.writeFile(outfile, decBytes);
+      return outfile;
     } else {
-      this._updateTimestamp();
+      this._setTime(timeKey);
+      return this._decryptMessage(data);
     }
-    return this._decryptMessage(encryptedMessage);
   }
 
   _getAngles() {
-    const hour_angle =
+    const hourAngle =
       30 * this.h + 0.5 * this.m + (0.5 / 60) * this.s;
-    const minute_angle = 6 * this.m + 0.1 * this.s;
-    const second_angle = 6 * this.s;
+    const minuteAngle = 6 * this.m + 0.1 * this.s;
+    const secondAngle = 6 * this.s;
     const angle_hm = Math.min(
-      Math.abs(hour_angle - minute_angle),
-      360 - Math.abs(hour_angle - minute_angle)
+      Math.abs(hourAngle - minuteAngle),
+      360 - Math.abs(hourAngle - minuteAngle)
     );
     const angle_ms = Math.min(
-      Math.abs(minute_angle - second_angle),
-      360 - Math.abs(minute_angle - second_angle)
+      Math.abs(minuteAngle - secondAngle),
+      360 - Math.abs(minuteAngle - secondAngle)
     );
     const angle_hs = Math.min(
-      Math.abs(hour_angle - second_angle),
-      360 - Math.abs(hour_angle - second_angle)
+      Math.abs(hourAngle - secondAngle),
+      360 - Math.abs(hourAngle - secondAngle)
     );
     return [angle_hm, angle_ms, angle_hs];
   }
 
   _selectTrig(angle) {
+    const rad = (angle * Math.PI) / 180;
     const quadrant = Math.floor(angle / 90) + 1;
-    const rad = math.unit(angle, "deg").toNumber("rad");
-    if (quadrant === 1) {
-      return math.sin(rad);
-    } else if (quadrant === 2) {
-      return math.cos(rad);
-    } else if (quadrant === 3) {
-      return math.tan(rad);
-    } else {
-      const tanVal = math.tan(rad);
-      return tanVal !== 0 ? 1 / tanVal : 0;
+    if (quadrant === 1) return Math.sin(rad);
+    if (quadrant === 2) return Math.cos(rad);
+    if (quadrant === 3) return Math.tan(rad);
+    const tanVal = Math.tan(rad);
+    return tanVal !== 0 ? 1 / tanVal : 0;
+  }
+
+  _proc(data, encrypt) {
+    const [angle_hm, angle_ms, angle_hs] = this._getAngles();
+    const result = [];
+    const h = this.h,
+      m = this.m,
+      s = this.s;
+    for (let idx = 0; idx < data.length; idx++) {
+      const b = data[idx];
+      const factor = (h + m + s + idx + 1) || 1;
+      const offset =
+        (this._selectTrig(angle_hm) +
+          this._selectTrig(angle_ms) +
+          this._selectTrig(angle_hs)) *
+          factor +
+        (idx + 1);
+      let val;
+      if (encrypt) {
+        val = (b + Math.round(offset)) % 256;
+      } else {
+        val = (b - Math.round(offset)) % 256;
+      }
+      result.push(val);
     }
+    return Buffer.from(result);
   }
 
   _encryptMessage(data) {
@@ -112,11 +147,11 @@ class Kaalka {
     return encrypted;
   }
 
-  _decryptMessage(encryptedMessage) {
+  _decryptMessage(data) {
     const [angle_hm, angle_ms, angle_hs] = this._getAngles();
     let decrypted = "";
-    for (let idx = 0; idx < encryptedMessage.length; idx++) {
-      const c = encryptedMessage[idx];
+    for (let idx = 0; idx < data.length; idx++) {
+      const c = data[idx];
       const factor = (this.h + this.m + this.s + idx + 1) || 1;
       const offset =
         (this._selectTrig(angle_hm) +
@@ -125,10 +160,19 @@ class Kaalka {
           factor +
         (idx + 1);
       decrypted += String.fromCharCode(
-        (c.charCodeAt(0) - Math.round(offset) + 256) % 256
+        (c.charCodeAt(0) - Math.round(offset)) % 256
       );
     }
     return decrypted;
+  }
+
+  async _isFile(p) {
+    try {
+      const stat = await fs.stat(p);
+      return stat.isFile();
+    } catch {
+      return false;
+    }
   }
 }
 

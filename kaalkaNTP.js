@@ -2,6 +2,21 @@ const ntpClient = require("ntp-client");
 const Kaalka = require("./kaalka");
 
 class KaalkaNTP extends Kaalka {
+  _parseTime(timeKey) {
+    const parts = String(timeKey).split(":");
+    let h = 0, m = 0, s = 0;
+    if (parts.length === 3) {
+      h = parseInt(parts[0]);
+      m = parseInt(parts[1]);
+      s = parseInt(parts[2]);
+    } else if (parts.length === 2) {
+      m = parseInt(parts[0]);
+      s = parseInt(parts[1]);
+    } else if (parts.length === 1) {
+      s = parseInt(parts[0]);
+    }
+    return { h: h % 12, m, s };
+  }
   constructor() {
     super();
     this.ntpTime = null;
