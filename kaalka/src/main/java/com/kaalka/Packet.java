@@ -1,4 +1,4 @@
-package main.java.com.kaalka;
+package com.kaalka;
 
 public class Packet {
     private String data;

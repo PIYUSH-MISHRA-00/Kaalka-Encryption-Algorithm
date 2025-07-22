@@ -1,8 +1,78 @@
-package main.java.com.kaalka;
+package com.kaalka;
+
 
 import java.util.Calendar;
 
 public class Kaalka {
+    // Encrypt a file (any type)
+    public String encryptFile(String filePath, Object timeKey) throws Exception {
+        if (timeKey != null) {
+            int[] t = parseTime(timeKey);
+            this.h = t[0];
+            this.m = t[1];
+            this.s = t[2];
+        } else {
+            updateTimestamp();
+        }
+        java.io.File file = new java.io.File(filePath);
+        if (!file.exists()) throw new IllegalArgumentException("File does not exist: " + filePath);
+        String ext = filePath.substring(filePath.lastIndexOf('.'));
+        byte[] raw = java.nio.file.Files.readAllBytes(file.toPath());
+        byte[] encBytes = proc(raw, true);
+        byte[] extBytes = ext.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        byte extLen = (byte) extBytes.length;
+        byte[] finalBytes = new byte[1 + extBytes.length + encBytes.length];
+        finalBytes[0] = extLen;
+        System.arraycopy(extBytes, 0, finalBytes, 1, extBytes.length);
+        System.arraycopy(encBytes, 0, finalBytes, 1 + extBytes.length, encBytes.length);
+        String base = filePath.substring(0, filePath.length() - ext.length());
+        String outFile = base + ".kaalka";
+        java.nio.file.Files.write(java.nio.file.Paths.get(outFile), finalBytes);
+        return outFile;
+    }
+
+    // Decrypt a file (any type)
+    public String decryptFile(String filePath, Object timeKey) throws Exception {
+        if (timeKey != null) {
+            int[] t = parseTime(timeKey);
+            this.h = t[0];
+            this.m = t[1];
+            this.s = t[2];
+        } else {
+            updateTimestamp();
+        }
+        java.io.File file = new java.io.File(filePath);
+        if (!file.exists()) throw new IllegalArgumentException("File does not exist: " + filePath);
+        byte[] buf = java.nio.file.Files.readAllBytes(file.toPath());
+        if (buf.length < 2) throw new IllegalArgumentException("File is too small or corrupted for decryption.");
+        int extLen = buf[0];
+        String ext = new String(buf, 1, extLen, java.nio.charset.StandardCharsets.UTF_8);
+        byte[] encData = java.util.Arrays.copyOfRange(buf, 1 + extLen, buf.length);
+        byte[] decBytes = proc(encData, false);
+        String base = filePath.substring(0, filePath.length() - ".kaalka".length());
+        String outFile = base + ext;
+        java.nio.file.Files.write(java.nio.file.Paths.get(outFile), decBytes);
+        return outFile;
+    }
+
+    // Core byte encryption/decryption logic
+    private byte[] proc(byte[] data, boolean encrypt) {
+        double[] angles = getAngles();
+        byte[] result = new byte[data.length];
+        for (int idx = 0; idx < data.length; idx++) {
+            int b = data[idx] & 0xFF;
+            int factor = (h + m + s + idx + 1) == 0 ? 1 : (h + m + s + idx + 1);
+            double offset = (selectTrig(angles[0]) + selectTrig(angles[1]) + selectTrig(angles[2])) * factor + (idx + 1);
+            int val;
+            if (encrypt) {
+                val = (b + (int) Math.round(offset)) % 256;
+            } else {
+                val = (b - (int) Math.round(offset) + 256) % 256;
+            }
+            result[idx] = (byte) val;
+        }
+        return result;
+    }
     private int h = 0;
     private int m = 0;
     private int s = 0;
@@ -118,7 +188,7 @@ public class Kaalka {
             int c = data.charAt(idx);
             int factor = (h + m + s + idx + 1) == 0 ? 1 : (h + m + s + idx + 1);
             double offset = (selectTrig(angleHm) + selectTrig(angleMs) + selectTrig(angleHs)) * factor + (idx + 1);
-            buffer.append((char) ((c + Math.round(offset)) % 256));
+            buffer.append((char) ((c + (int) Math.round(offset)) % 256));
         }
         return buffer.toString();
     }
@@ -133,7 +203,7 @@ public class Kaalka {
             int c = encryptedMessage.charAt(idx);
             int factor = (h + m + s + idx + 1) == 0 ? 1 : (h + m + s + idx + 1);
             double offset = (selectTrig(angleHm) + selectTrig(angleMs) + selectTrig(angleHs)) * factor + (idx + 1);
-            buffer.append((char) ((c - Math.round(offset) + 256) % 256));
+            buffer.append((char) ((c - (int) Math.round(offset) + 256) % 256));
         }
         return buffer.toString();
     }

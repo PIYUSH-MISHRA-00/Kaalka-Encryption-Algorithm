@@ -1,4 +1,4 @@
-package main.java.com.kaalka;
+package com.kaalka;
 
 import java.util.Calendar;
 import java.util.function.Function;

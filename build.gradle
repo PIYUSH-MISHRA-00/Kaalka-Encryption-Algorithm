@@ -3,8 +3,8 @@ plugins {
     id 'maven-publish'
 }
 
-group 'main.java.com.kaalka'
-version '1.0.0'
+group 'com.kaalka'
+version '3.0.0'
 
 repositories {
     mavenCentral()
@@ -12,7 +12,19 @@ repositories {
 
 dependencies {
     implementation 'commons-net:commons-net:3.9.0' // Replace with the desired version of Commons Net
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
 }
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+test {
+    useJUnitPlatform()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+sourceCompatibility = '21'
+targetCompatibility = '21'
