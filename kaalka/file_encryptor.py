@@ -21,15 +21,34 @@ class Kaalka:
         self.s = t.tm_sec
 
     def _set_time(self, time_key):
+        """
+        Set internal time state (h, m, s) from a time string.
+        Supports legacy 'HH:MM:SS' and ISO8601 'YYYY-MM-DDTHH:MM:SS.sssZ'.
+        """
         if time_key:
-            parts = str(time_key).split(':')
-            h, m, s = 0, 0, 0
-            if len(parts) == 3:
-                h, m, s = map(int, parts)
-            elif len(parts) == 2:
-                m, s = map(int, parts)
-            elif len(parts) == 1:
-                s = int(parts[0])
+            time_str = str(time_key)
+            # ISO8601: YYYY-MM-DDTHH:MM:SS.sssZ
+            if 'T' in time_str:
+                try:
+                    tpart = time_str.split('T')[1]
+                    # Remove trailing Z if present
+                    tpart = tpart.rstrip('Z')
+                    # Remove milliseconds if present
+                    if '.' in tpart:
+                        tpart = tpart.split('.')[0]
+                    hms = tpart.split(':')
+                    h, m, s = map(int, hms)
+                except Exception:
+                    h, m, s = 0, 0, 0
+            else:
+                parts = time_str.split(':')
+                h, m, s = 0, 0, 0
+                if len(parts) == 3:
+                    h, m, s = map(int, parts)
+                elif len(parts) == 2:
+                    m, s = map(int, parts)
+                elif len(parts) == 1:
+                    s = int(parts[0])
             self.h = h % 12
             self.m = m
             self.s = s
