@@ -1,16 +1,61 @@
 
 
-# Kaalka Encryption Algorithm for Dart
 
-Robust, timestamp-based encryption for Dart, compatible with Python and JavaScript implementations. Uses angles and trigonometric functions for text, and integer arithmetic for file/media encryption, ensuring lossless, reversible results for all file types (images, binary, etc.).
+# Kaalka Encryption Algorithm for Dart (v5.0.0)
+
+Application-ready time protocol: envelope, seal, replay protection, file chunking, public API. Pure Kaalka time-based logic, no external crypto. Cross-language compatible with Python and JavaScript.
+
 
 ## Features
-- **Robust encryption** using timestamp-based keys (angles, trigonometric functions for text; integer arithmetic for files/media)
+- **Time-based protocol**: Envelope, seal, replay protection, time window, sequence, sender/receiver IDs
+- **Robust encryption**: Timestamp-based keys, Kaalka drum logic, no external crypto
+- **File/media support**: Chunked file encryption/decryption for large files
+- **Flexible API**: Use system UTC or custom timestamp for all operations
 - **Cross-platform**: Compatible with Python and Node.js Kaalka implementations
-- **Flexible API**: Use system time, NTP, or custom timestamp for encryption/decryption
-- **File/media support**: Encrypt/decrypt any file or media type (text, binary, images, etc.) with lossless, reversible results
-- **Extension handling**: Encrypted files use `.kaalka`, decrypted files restore original extension
-- **Packet support**: Example wrapper for secure message packets
+## Public API
+
+```dart
+// Envelope encryption
+Map<String, dynamic> KaalkaProtocol.encryptEnvelope(String plaintext, String senderId, String receiverId, {String? timestamp});
+
+// Envelope decryption
+String KaalkaProtocol().decryptEnvelope(Map<String, dynamic> envelope, String receiverId, {String? timestamp});
+
+// File chunk encryption
+List<Map<String, dynamic>> KaalkaFile.encryptFileChunks(Uint8List fileBytes, String senderId, String receiverId, {String? timestamp});
+
+// File chunk decryption
+Uint8List KaalkaFile.decryptFileChunks(List<Map<String, dynamic>> encryptedChunks, String receiverId, {String? timestamp});
+```
+## Protocol Details
+
+- **Envelope**: Canonical format with senderId, receiverId, timestamp, window, seq, ciphertext, seal
+- **Seal**: Time-based integrity check (MIC) using Kaalka logic
+- **Replay protection**: Sequence numbers tracked per sender/receiver
+- **Time window**: Messages auto-expire outside allowed window
+- **Chunking**: Large files split and encrypted per chunk with chunk index + timestamp
+## Example Usage
+
+```dart
+import 'package:kaalka/kaalka_protocol.dart';
+import 'package:kaalka/kaalka_file.dart';
+import 'dart:typed_data';
+
+void main() {
+  // Envelope roundtrip
+  final envelope = KaalkaProtocol.encryptEnvelope('hello', 'sender', 'receiver');
+  final pt = KaalkaProtocol().decryptEnvelope(envelope, 'receiver');
+
+  // File chunk roundtrip
+  final fileBytes = Uint8List.fromList(List.generate(2 * 1024 * 1024, (i) => i % 256));
+  final chunks = KaalkaFile.encryptFileChunks(fileBytes, 'sender', 'receiver');
+  final outBytes = KaalkaFile.decryptFileChunks(chunks, 'receiver');
+}
+```
+## Testing
+- Unit tests for envelope, replay, file chunking, and time logic in `test/kaalka_protocol_test.dart`
+## Changelog
+- See CHANGELOG.md for v5.0.0: Application-ready protocol, envelope, seal, replay, chunking, public API
 
 ## Installation
 Add to your `pubspec.yaml`:

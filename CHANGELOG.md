@@ -1,3 +1,12 @@
+# [5.0.0] - 2025-09-05
+- Application-ready time protocol: envelope, seal, replay protection, file chunking, public API.
+- Pure Kaalka time-based logic, no external crypto.
+- Envelope format: senderId, receiverId, timestamp, window, seq, ciphertext, seal.
+- Time-based integrity (seal/MIC) and replay protection.
+- File chunking for large file encryption/decryption.
+- Flexible API: system UTC or user timestamp.
+- Unit tests for envelope, replay, chunking, and time logic.
+- Backward compatible with previous Kaalka features.
 # [4.0.0] - 2025-07-22
 ### Changed
 - File/media encryption now uses integer arithmetic for lossless, reversible results (matches Python/JavaScript logic)
