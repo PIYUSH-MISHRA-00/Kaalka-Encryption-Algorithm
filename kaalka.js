@@ -35,15 +35,23 @@ class Kaalka {
   async encrypt(data, timeKey) {
     if (typeof data === "string" && (await this._isFile(data))) {
       const ext = path.extname(data);
+      // Detect if file is text or binary by extension
+      const textExts = ['.txt', '.md', '.csv', '.json', '.xml', '.html', '.js', '.py'];
+      const isText = textExts.includes(ext.toLowerCase());
       const raw = await fs.readFile(data);
       this._setTime(timeKey);
-      const encBytes = this._proc(raw, true);
+      let encBytes;
+      if (isText) {
+        encBytes = this._proc(Buffer.from(raw.toString('utf8')), true);
+      } else {
+        encBytes = this._proc(raw, true);
+      }
       const extBytes = Buffer.from(ext, "utf8");
       const extLen = Buffer.from([extBytes.length]);
       const final = Buffer.concat([extLen, extBytes, encBytes]);
-      const base = path.join(path.dirname(data), path.basename(data, ext));
-      const outfile = base + ".kaalka";
+      const outfile = path.join(path.dirname(data), path.basename(data, ext) + ".kaalka");
       await fs.writeFile(outfile, final);
+      console.log(`[Kaalka] Encrypted file: ${outfile}`);
       return outfile;
     } else {
       this._setTime(timeKey);
@@ -58,13 +66,18 @@ class Kaalka {
       const ext = buf.slice(1, 1 + extLen).toString("utf8");
       const encData = buf.slice(1 + extLen);
       this._setTime(timeKey);
-      const decBytes = this._proc(encData, false);
-      const base = path.join(
-        path.dirname(data),
-        path.basename(data, ".kaalka")
-      );
+      // Detect if file is text or binary by extension
+      const textExts = ['.txt', '.md', '.csv', '.json', '.xml', '.html', '.js', '.py'];
+      const isText = textExts.includes(ext.toLowerCase());
+      let decBytes = this._proc(encData, false);
+      const base = path.join(path.dirname(data), path.basename(data, ".kaalka"));
       const outfile = base + ext;
-      await fs.writeFile(outfile, decBytes);
+      if (isText) {
+        await fs.writeFile(outfile, decBytes.toString('utf8'));
+      } else {
+        await fs.writeFile(outfile, decBytes);
+      }
+      console.log(`[Kaalka] Decrypted file: ${outfile}`);
       return outfile;
     } else {
       this._setTime(timeKey);
@@ -114,7 +127,7 @@ class Kaalka {
       if (encrypt) {
         val = (b + offset) % 256;
       } else {
-        val = (b - offset) % 256;
+        val = (b - offset + 256) % 256;
       }
       result.push(val);
     }

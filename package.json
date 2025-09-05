@@ -1,10 +1,11 @@
 {
   "name": "kaalka",
-  "version": "4.0.0",
-  "description": "Kaalka: Time-based encryption library for Node.js supporting robust, lossless text and file encryption using clock hand angles and trigonometric functions.",
+  "version": "5.0.0",
+  "description": "Kaalka: Time-based encryption library for Node.js supporting robust, lossless text, file, and chunked file encryption using clock hand angles, trigonometric functions, and pure time-first protocol. Includes CLI, protocol wrappers, and full test suite.",
   "main": "kaalka.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "cli": "node cli/kaalka_time_cli.js"
   },
   "keywords": [
     "encryption",
@@ -19,9 +20,17 @@
     "kaalka.js",
     "kaalkaNTP/",
     "kaalka/",
+    "lib/",
+    "cli/",
     "README.md",
     "LICENSE"
   ],
+  "bin": {
+    "kaalka": "cli/kaalka_time_cli.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm/tree/javascript"
