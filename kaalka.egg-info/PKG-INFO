@@ -1,23 +1,20 @@
-Metadata-Version: 2.4
+Metadata-Version: 2.1
 Name: kaalka
-Version: 4.0.0
-Summary: Kaalka Encryption Library
+Version: 5.0.0
+Summary: Kaalka: Production-ready time-based encryption library for Python
 Home-page: https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm/tree/python
 Author: PIYUSH-MISHRA-00
 Author-email: piyushmishra.professional@gmail.com
 License: Custom
 Description-Content-Type: text/markdown
 License-File: LICENSE
-Requires-Dist: ntplib
-Dynamic: author
-Dynamic: author-email
-Dynamic: description
-Dynamic: description-content-type
-Dynamic: home-page
-Dynamic: license
-Dynamic: license-file
-Dynamic: requires-dist
-Dynamic: summary
+
+
+**Kaalka: Time-Based Encryption Library for Python**
+
+Kaalka is a robust, production-ready time-based encryption library for Python. It enables secure, non-trivial encryption and decryption of messages and files using either the current system time or a user-provided timestamp as the cryptographic key. Kaalka supports messaging, file transfer, chunked file encryption, and NTP-based workflows.
+
+All cryptographic operations use custom Kaalka-style derivations (Sundial, Pulse, Resonance, Weave, Drum, Seal, Ledger) built on the Kaalka Drum cipher. No external crypto primitives are used. The code is fully tested and ready for production use.
 
 # Kaalka: Time-Based Encryption Library for Python
 
@@ -125,7 +122,7 @@ Kaalka-Encryption-Algorithm/
 |-- .git/
 ```
 
-## ⚠️ Security Notes
+## 🔐 Security Notes
 - If you do not provide a timestamp, the current system time is used for encryption and decryption. Encryption and decryption must occur at the same second for the result to be correct.
 - For reproducibility and secure communication, always provide an explicit timestamp string (format: 'HH:MM:SS').
 - The strength of encryption depends on the secrecy and unpredictability of the timestamp used.

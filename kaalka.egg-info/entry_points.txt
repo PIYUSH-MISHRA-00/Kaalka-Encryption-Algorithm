@@ -1,0 +1,2 @@
+[console_scripts]
+kaalka-time-cli = cli.kaalka_time_cli:main
