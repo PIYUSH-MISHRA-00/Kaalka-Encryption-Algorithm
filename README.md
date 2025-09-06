@@ -1,134 +1,83 @@
+# Kaalka Encryption Algorithm (Java)
 
-# Kaalka Package for Java
-
-Robust, timestamp-based encryption for Java, compatible with Python, Dart, and JavaScript implementations. Uses angles and trigonometric functions for text, and integer arithmetic for file/media encryption, ensuring lossless, reversible results for all file types (images, binary, etc.).
+Robust, time-first encryption for Java, matching Python, Dart, and JavaScript implementations. Pure Kaalka logic—no external crypto libraries.
 
 ## Features
-- **Robust encryption** using timestamp-based keys (angles, trigonometric functions for text; integer arithmetic for files/media)
-- **Cross-platform**: Compatible with Python, Dart, and Node.js Kaalka implementations
-- **Flexible API**: Use system time, NTP, or custom timestamp for encryption/decryption
-- **File/media support**: Encrypt/decrypt any file or media type (text, binary, images, etc.) with lossless, reversible results
-- **Extension handling**: Encrypted files use `.kaalka`, decrypted files restore original extension
-- **Packet support**: Example wrapper for secure message packets
+- **Time-first protocol**: Envelope, seal, replay protection, time window
+- **Envelope & Seal**: Canonical envelope structure, time-based integrity MIC
+- **Replay Protection**: In-memory replay ledger
+- **Chunked File Encryption**: File chunking and encryption/decryption
+- **CLI Tool**: Envelope, text, and file operations
+- **Public API**: Encrypt/decrypt envelope, files, chunks
+- **Automated Tests**: Protocol, replay, expiry, chunking
+- **Documentation & Metadata**: v5.0.0, Javadoc
 
 ## File Structure
 ```
-Kaalka-Encryption-Algorithm/
-├── .classpath
-├── .git/
-├── .gitignore
-├── .gradle/
-├── .project
-├── build/
-│   ├── libs/                # Compiled JARs
-│   └── tmp/
-├── build.gradle             # Gradle build config
-├── effective-pom.xml
-├── gradle/
-├── gradlew
-├── gradlew.bat
-├── kaalka/
-│   └── src/
-│       ├── main/
-│       │   └── java/
-│       │       └── com/
-│       │           └── kaalka/
-│       │               ├── Kaalka.java
-│       │               ├── KaalkaNTP.java
-│       │               └── Packet.java
-│       └── test/
-│           └── java/
-│               └── com/
-│                   └── kaalka/
-│                       ├── KaalkaFileDemo.java
-│                       ├── KaalkaNTPTest.java
-│                       ├── KaalkaTest.java
-│                       ├── KaalkaTestExtended.java
-│                       ├── KaalkaThoroughTest.java
-│                       ├── PacketTest.java
-│                       └── PerformanceTest.java
-├── kaalka-2.0.0.jar
-├── kaalka-3.0.0.jar
-├── kaalka-lib.jar
-├── pom.xml                 # Maven build config
-├── README.md
-├── settings.xml
-└── workflows/
+src/main/java/kaalka/
+  KaalkaEnvelope.java
+  KaalkaProtocol.java
+  KaalkaFile.java
+  KaalkaUtils.java
+  KaalkaCLI.java
+src/test/java/kaalka/
+  KaalkaProtocolTest.java
+  KaalkaFileTest.java
+README.md
+CHANGELOG.md
+build.gradle / pom.xml
 ```
 
 ## Usage Example
 ```java
-import com.kaalka.Kaalka;
-import com.kaalka.KaalkaNTP;
-import com.kaalka.Packet;
+import kaalka.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        // Text encryption/decryption
-        Kaalka kaalka = new Kaalka();
-        String originalMessage = "Hello, Kaalka!";
-        String encryptedMessage = kaalka.encrypt(originalMessage, "10:20:30");
-        String decryptedMessage = kaalka.decrypt(encryptedMessage, "10:20:30");
-        System.out.println("Original Message: " + originalMessage);
-        System.out.println("Encrypted Message: " + encryptedMessage);
-        System.out.println("Decrypted Message: " + decryptedMessage);
+        // Envelope encryption/decryption
+        String sender = "Alice";
+        String receiver = "Bob";
+        String timestamp = KaalkaUtils.utcNow();
+        String plaintext = "Hello, Bob!";
+        KaalkaEnvelope env = KaalkaProtocol.encryptEnvelope(plaintext, sender, receiver, timestamp, 120, 1);
+        String decrypted = new KaalkaProtocol().decryptEnvelope(env, receiver, timestamp);
+        System.out.println("Decrypted: " + decrypted);
 
-        // File/media encryption/decryption
-        String encryptedFile = kaalka.encryptFile("test_image.jpg", "10:20:30"); // Produces test_image.kaalka
-        String decryptedFile = kaalka.decryptFile(encryptedFile, "10:20:30"); // Produces test_image.jpg
-        System.out.println("Encrypted File: " + encryptedFile);
-        System.out.println("Decrypted File: " + decryptedFile);
-
-        // Example usage of KaalkaNTP
-        KaalkaNTP kaalkaNTP = new KaalkaNTP();
-        String encryptedNTPMessage = kaalkaNTP.encrypt(originalMessage, "10:20:30");
-        String decryptedNTPMessage = kaalkaNTP.decrypt(encryptedNTPMessage, "10:20:30");
-        System.out.println("\nUsing KaalkaNTP:");
-        System.out.println("Encrypted NTP Message: " + encryptedNTPMessage);
-        System.out.println("Decrypted NTP Message: " + decryptedNTPMessage);
-
-        // Example usage of Packet
-        Packet packet = new Packet("Payload", "12:34:56");
-        packet.encrypt();
-        String decryptedPacket = packet.decrypt();
-        System.out.println("\nPacket decrypted: " + decryptedPacket);
+        // File chunk encryption/decryption
+        byte[] fileBytes = "This is a test file.".getBytes();
+        var chunks = KaalkaFile.encryptFileChunks(fileBytes, sender, receiver, timestamp);
+        byte[] outBytes = KaalkaFile.decryptFileChunks(chunks, receiver, timestamp);
+        System.out.println("File roundtrip: " + new String(outBytes));
     }
 }
 ```
-## Thorough Testing
-Run all JUnit tests and the demo script for complete coverage:
-- Text, file, binary, UTF-8, large files, extension handling, error cases
-- Performance test for large files
+
+## CLI Usage
+```
+java -cp build/libs/kaalka.jar kaalka.KaalkaCLI encrypt --in input.txt --out out.bin --sender Alice --receiver Bob --timestamp 2025-09-05T12:00:00.000Z
+java -cp build/libs/kaalka.jar kaalka.KaalkaCLI decrypt --in out.bin --out output.txt --receiver Bob --timestamp 2025-09-05T12:00:00.000Z
+java -cp build/libs/kaalka.jar kaalka.KaalkaCLI envelope --text "Hello" --sender Alice --receiver Bob
+```
+
+## Testing
+Run all JUnit tests for complete coverage:
+```
+./gradlew test
+```
 
 ## Build Instructions
-To build the JAR for version 3.0:
-```sh
+To build the JAR:
+```
 ./gradlew build
 ```
-The JAR will be in `build/libs/`.
+JAR will be in `build/libs/`.
 
 ## API Reference
+- `KaalkaProtocol.encryptEnvelope(String, String, String, String, int, int)`
+- `KaalkaProtocol.decryptEnvelope(KaalkaEnvelope, String, String)`
+- `KaalkaFile.encryptFileChunks(byte[], String, String, String)`
+- `KaalkaFile.decryptFileChunks(List<KaalkaEnvelope>, String, String)`
+- CLI: `KaalkaCLI`
 
-### Kaalka
-- `Kaalka()` — Create instance (uses current system time)
-- `String encrypt(String data, Object timeKey)` — Encrypt text
-- `String decrypt(String encrypted, Object timeKey)` — Decrypt text
-- `String encryptFile(String filePath, Object timeKey)` — Encrypt any file/media (extension handled)
-- `String decryptFile(String filePath, Object timeKey)` — Decrypt any file/media (extension restored)
-
-### KaalkaNTP
-- `KaalkaNTP()` — Create instance (uses system time, can be extended for NTP)
-- `String encrypt(String data, Object timeKey)`
-- `String decrypt(String encrypted, Object timeKey)`
-
-### Packet
-- `Packet(String data, Object timeKey)`
-- `void encrypt()`
-- `String decrypt()`
-
-## Timestamp Format
-- Accepts `int` (seconds), `String` (`HH:MM:SS`, `MM:SS`, or `SS`)
-- If omitted, uses current system time
-
-- Compatible with [Python](https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm), [Dart](https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm), and [Node.js](https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm) Kaalka libraries
-  - Java v4.0.0 uses integer arithmetic for file/media encryption, matching Python/JavaScript/Dart for robust, lossless results.
+## Changelog
+See `CHANGELOG.md` for details.

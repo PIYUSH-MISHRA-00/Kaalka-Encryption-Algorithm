@@ -3,8 +3,8 @@ plugins {
     id 'maven-publish'
 }
 
-group 'com.kaalka'
-version '3.0.0'
+group 'kaalka'
+version '5.0.0'
 
 repositories {
     mavenCentral()
@@ -20,6 +20,18 @@ test {
     useJUnitPlatform()
 }
 
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'kaalka.KaalkaCLI',
+            'Implementation-Version': '5.0.0',
+            'Implementation-Title': 'Kaalka Encryption Algorithm',
+            'License': 'Custom License: See LICENSE file in repository.'
+        )
+    }
+    archiveBaseName.set('Kaalka-Encryption-Algorithm')
+    archiveVersion.set('5.0.0')
+}
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)

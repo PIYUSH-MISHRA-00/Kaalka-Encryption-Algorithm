@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="kaalka.KaalkaProtocolTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2025-09-06T07:50:34" hostname="OLYMPUS" time="0.008">
+  <properties/>
+  <testcase name="testMessageExpiry()" classname="kaalka.KaalkaProtocolTest" time="0.002"/>
+  <testcase name="testEnvelopeEncryptDecrypt()" classname="kaalka.KaalkaProtocolTest" time="0.002"/>
+  <testcase name="testReplayProtection()" classname="kaalka.KaalkaProtocolTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
