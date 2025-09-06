@@ -2,165 +2,150 @@
   <img src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54">
   <img src="https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white">
   <img src="https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white">
-  <img src="https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E">
   <img src="https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white">
   <img src="https://img.shields.io/badge/dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white">
 </div>
 
 <a href="https://doi.org/10.5281/zenodo.8170382"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.8170382.svg" alt="DOI"></a>
 
-
-# Kaalka Encryption Algorithm
+# <div align="center">Kaalka Encryption Algorithm</div>
 
 <div align="center">
-  <b>Time is the Key 🔑</b>
+  <b style="font-size:1.5em;">Time is the Key 🔑</b>
+  <br>
+  <!-- <img src="https://user-images.githubusercontent.com/25122299/273370073-7e2e2e2e-7e2e-4e2e-8e2e-7e2e2e2e2e2e.png" width="120"/> -->
 </div>
 
-Kaalka is a robust, timestamp-based encryption algorithm for cross-platform security. It leverages clock angles and trigonometric functions, making encryption and decryption dependent on time—either the current system time or a user-supplied timestamp. This ensures that the same message encrypted at different times yields different ciphertexts, providing strong, time-variant security.
+---
+
+## 🌟 Overview
+Kaalka is a robust, time-driven encryption protocol for cross-platform security. It leverages clock angles, trigonometric functions, and time-based transformations—making every encryption unique to its timestamp. Kaalka supports envelope, seal, replay protection, chunked file encryption, and a CLI tool, all implemented natively in Python, JavaScript, Java, Kotlin, and Dart.
 
 ---
 
-## 🌐 Supported Languages
-
-Kaalka is implemented and maintained in:
-
-- **Python**
-- **Node.js (JavaScript)**
-- **Java**
-- **Kotlin**
-- **Dart**
+## 🚀 Features
+- **Time-First Protocol:** Envelope, seal, replay protection, time window
+- **Envelope & Seal:** Canonical structure, time-based integrity MIC
+- **Replay Protection:** In-memory ledger, auto-expiry
+- **Chunked File Encryption:** Large file support, lossless roundtrip
+- **CLI Tool:** Encrypt, decrypt, envelope, file operations
+- **Cross-Platform:** Identical logic in Python, JS, Java, Kotlin, Dart
+- **Flexible API:** System or user-defined timestamp
+- **Production-Ready:** Fully tested, documented, and versioned (v5.0.0)
 
 ---
 
-## 🚀 Quick Start
+## 📦 Supported Languages
+<div align="center">
+  <b>Python · Node.js · Java · Kotlin · Dart</b>
+</div>
+
+---
+
+## 💻 Quick Start
 
 ### Python
 ```python
 from kaalka import Kaalka
 kaalka = Kaalka()
-
-# Text
-encrypted = kaalka.encrypt("Hello")                      # system time
+encrypted = kaalka.encrypt("Hello")
 decrypted = kaalka.decrypt(encrypted)
+# Explicit timestamp
 encrypted_exp = kaalka.encrypt("Hello", time_key="12:34:56")
 decrypted_exp = kaalka.decrypt(encrypted_exp, time_key="12:34:56")
-
-# File / Media
-# NOTE: You only specify the input file name (with extension). The encrypted file will always be named <input>.kaalka automatically.
-# Decryption restores the original file name and extension.
-kaalka.encrypt("input.jpg")              # produces input.kaalka
-kaalka.decrypt("input.kaalka")           # restores input.jpg
-kaalka.encrypt("input.jpg", time_key="12:34:56")
-kaalka.decrypt("input.kaalka", time_key="12:34:56")
-```
-
-### Node.js (JavaScript)
-```js
-const Kaalka = require('kaalka');
-const kaalka = new Kaalka();
-
-// Text
-const encrypted = kaalka.encrypt("Hello");               // system time
-const decrypted = kaalka.decrypt(encrypted);
-const encryptedExp = kaalka.encrypt("Hello", "12:34:56");
-const decryptedExp = kaalka.decrypt(encryptedExp, "12:34:56");
-
-// File / Media
-// NOTE: You only specify the input file name (with extension). The encrypted file will always be named <input>.kaalka automatically.
-// Decryption restores the original file name and extension.
-kaalka.encryptFile("input.jpg");              // produces input.kaalka
-kaalka.decryptFile("input.kaalka");           // restores input.jpg
-kaalka.encryptFile("input.jpg", "12:34:56");
-kaalka.decryptFile("input.kaalka", "12:34:56");
 ```
 
 ### Java
 ```java
 Kaalka kaalka = new Kaalka();
-
-// Text
-String encrypted = kaalka.encrypt("Hello");              // system time
+String encrypted = kaalka.encrypt("Hello");
 String decrypted = kaalka.decrypt(encrypted);
+// Explicit timestamp
 String encryptedExp = kaalka.encrypt("Hello", "12:34:56");
 String decryptedExp = kaalka.decrypt(encryptedExp, "12:34:56");
-
-// File / Media
-// NOTE: You only specify the input file name (with extension). The encrypted file will always be named <input>.kaalka automatically.
-// Decryption restores the original file name and extension.
-kaalka.encryptFile("input.jpg");              // produces input.kaalka
-kaalka.decryptFile("input.kaalka");           // restores input.jpg
-kaalka.encryptFile("input.jpg", "12:34:56");
-kaalka.decryptFile("input.kaalka", "12:34:56");
 ```
 
 ### Kotlin
 ```kotlin
 val kaalka = Kaalka()
-
-// Text
-val encrypted = kaalka.encrypt("Hello")                  // system time
+val encrypted = kaalka.encrypt("Hello")
 val decrypted = kaalka.decrypt(encrypted)
+// Explicit timestamp
 val encryptedExp = kaalka.encrypt("Hello", "12:34:56")
 val decryptedExp = kaalka.decrypt(encryptedExp, "12:34:56")
-
-// File / Media
-// NOTE: You only specify the input file name (with extension). The encrypted file will always be named <input>.kaalka automatically.
-// Decryption restores the original file name and extension.
-kaalka.encryptFile("input.jpg")               // produces input.kaalka
-kaalka.decryptFile("input.kaalka")            // restores input.jpg
-kaalka.encryptFile("input.jpg", "12:34:56")
-kaalka.decryptFile("input.kaalka", "12:34:56")
 ```
 
 ### Dart
 ```dart
 final kaalka = Kaalka();
-
-// Text
-final encrypted = kaalka.encrypt('Hello');               // system time
+final encrypted = kaalka.encrypt('Hello');
 final decrypted = kaalka.decrypt(encrypted);
+// Explicit timestamp
 final encryptedExp = kaalka.encrypt('Hello', timeKey: '12:34:56');
 final decryptedExp = kaalka.decrypt(encryptedExp, timeKey: '12:34:56');
+```
 
-// File / Media
-// NOTE: You only specify the input file name (with extension). The encrypted file will always be named <input>.kaalka automatically.
-// Decryption restores the original file name and extension.
-kaalka.encryptFile('input.jpg');              // produces input.kaalka
-kaalka.decryptFile('input.kaalka');           // restores input.jpg
-kaalka.encryptFile('input.jpg', timeKey: '12:34:56');
-kaalka.decryptFile('input.kaalka', timeKey: '12:34:56');
+### JavaScript
+```js
+const Kaalka = require('kaalka');
+const kaalka = new Kaalka();
+const encrypted = kaalka.encrypt("Hello");
+const decrypted = kaalka.decrypt(encrypted);
+// Explicit timestamp
+const encryptedExp = kaalka.encrypt("Hello", "12:34:56");
+const decryptedExp = kaalka.decrypt(encryptedExp, "12:34:56");
 ```
 
 ---
 
-## 🔑 How Kaalka Works
+## 🛡️ Protocol & CLI Highlights
+- **Envelope:** senderId, receiverId, timestamp, window, seq, ciphertext, seal
+- **Seal:** Time-based integrity MIC, auto-expiry, replay protection
+- **Chunked File:** Large file support, chunk index + timestamp
+- **Explicit Timestamp Support:**
+  - All APIs and CLI commands allow you to pass a custom timestamp for encryption and decryption.
+  - This enables time-variant security and cross-platform compatibility.
+- **CLI Tool:**
+  - `encrypt --in <inputFile> --out <outputFile> --sender <id> --receiver <id> --timestamp <time>`
+  - `decrypt --in <inputFile> --out <outputFile> --receiver <id> --timestamp <time>`
+  - `envelope --text "message" --sender <id> --receiver <id> --timestamp <time>`
 
-- <b>Timestamp-based Security:</b> Encryption and decryption rely on the timestamp (hour, minute, second).
-- <b>Mathematical Obfuscation:</b> Uses clock hand angles and trigonometric operations (sin, cos, tan, cot) to compute dynamic character-level transformations.
-- <b>Flexible Time Input:</b> Supports time in HH:MM:SS, MM:SS, SS, or defaults to system time.
-- <b>Cross-Platform Identicality:</b> Works seamlessly across all supported platforms using the same algorithmic logic.
+---
+
+## 🧪 Testing & Reliability
+- **Unit Tests:** Protocol, envelope, seal, replay, chunking, CLI
+- **Cross-Platform:** Identical results across all supported languages
+- **Production-Ready:** All tests pass, robust error handling
+
+---
+
+## 📚 Documentation & API
+- **API Reference:**
+  - `encryptEnvelope(plaintext, senderId, receiverId, timestamp?)`
+  - `decryptEnvelope(envelope, receiverId, timestamp?)`
+  - `encryptFileChunks(fileBytes, senderId, receiverId, timestamp?)`
+  - `decryptFileChunks(chunks, receiverId, timestamp?)`
+- **CLI Usage:** See above
+- **Changelog:** See `CHANGELOG.md`
 
 ---
 
 ## 🔄 Cross-Platform Compatibility
-
-- <b>Python:</b> <a href="https://pypi.org/project/kaalka/">PyPI</a>
-- <b>Node.js:</b> <a href="https://www.npmjs.com/package/kaalka">npm</a>
-- <b>Dart:</b> <a href="https://pub.dev/packages/kaalka">pub.dev</a>
-- <b>Java/Kotlin:</b> <a href="https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm/releases">GitHub Releases</a>
+- **Python:** [PyPI](https://pypi.org/project/kaalka/)
+- **Node.js:** [npm](https://www.npmjs.com/package/kaalka)
+- **Dart:** [pub.dev](https://pub.dev/packages/kaalka)
+- **Java/Kotlin:** [GitHub Releases](https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm/releases)
 
 ---
 
 ## 🤝 Contributing
-
 Contributions, bug reports, and feature requests are welcome.<br>
-Submit issues or pull requests via <a href="https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm">GitHub</a>.
+Submit issues or pull requests via [GitHub](https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm).
 
 ---
 
 ## 💡 Author & Credits
-
-Developed and maintained by <a href="https://github.com/PIYUSH-MISHRA-00">Piyush Mishra</a>.<br>
+Developed and maintained by [Piyush Mishra](https://github.com/PIYUSH-MISHRA-00).<br>
 Thanks to contributors across all supported language implementations.
 
 <div align="center"> <b>Time is the Key.</b> </div>
