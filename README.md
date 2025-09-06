@@ -126,7 +126,7 @@ const decryptedExp = kaalka.decrypt(encryptedExp, "12:34:56");
   - `encryptFileChunks(fileBytes, senderId, receiverId, timestamp?)`
   - `decryptFileChunks(chunks, receiverId, timestamp?)`
 - **CLI Usage:** See above
-- **Changelog:** See `CHANGELOG.md`
+- **Changelog:** See [`CHANGELOG.md`](./CHANGELOG.md)
 
 ---
 
