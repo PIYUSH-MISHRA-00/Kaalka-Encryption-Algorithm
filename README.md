@@ -1,109 +1,81 @@
 # Kaalka Encryption Algorithm (Kotlin)
 
-Robust, timestamp-based encryption for Kotlin/JVM, compatible with Python, Dart, Java, and JavaScript implementations. Uses angles and trigonometric functions for text, and integer arithmetic for file/media encryption, ensuring lossless, reversible results for all file types (images, binary, etc.).
+Robust, time-first encryption for Kotlin, matching Python, Dart, JavaScript, and Java implementations. Pure Kaalka logic—no external crypto libraries.
 
-**Version:** 4.0.0
+## Features
+- **Time-first protocol**: Envelope, seal, replay protection, time window
+- **Envelope & Seal**: Canonical envelope data class, time-based integrity MIC
+- **Replay Protection**: In-memory replay ledger
+- **Chunked File Encryption**: File chunking and encryption/decryption
+- **CLI Tool**: Envelope, text, and file operations
+- **Public API**: Encrypt/decrypt envelope, files, chunks
+- **Automated Tests**: Protocol, replay, expiry, chunking
+- **Documentation & Metadata**: v5.0.0, KDoc
 
-**Features:**
-- Text encryption/decryption (timestamp-based, trigonometric logic)
-- File/media encryption/decryption (lossless, integer arithmetic for robust support)
-- Binary/media encryption/decryption
-- Extension handling (preserves file extension during encryption/decryption)
-- Error handling (returns success/failure for file operations)
-- Packet demo (UDP send/receive with encryption)
-- KaalkaNTP (NTP-based timestamp logic)
-- Thorough test suite for all features, including images and binary files
-
-## Project Structure
-
+## File Structure
 ```
-kaalka-library/
-│
-├─ src/
-│   ├─ main/
-│   │   └─ kotlin/
-│   │       ├─ com/kaalka/
-│   │       │   ├─ Kaalka.kt
-│   │       │   ├─ KaalkaNTP.kt
-│   │       │   ├─ Packet.kt
-│   │       └─ Main.kt
-│   │
-│   └─ test/
-│       └─ kotlin/
-│           └─ com/kaalka/
-│               └─ test.kt
-│
-├─ build.gradle.kts
-├─ settings.gradle.kts
-└─ README.md
+src/main/kotlin/kaalka/
+  KaalkaEnvelope.kt
+  KaalkaProtocol.kt
+  KaalkaFile.kt
+  KaalkaUtils.kt
+  KaalkaCLI.kt
+src/test/kotlin/kaalka/
+  KaalkaProtocolTest.kt
+  KaalkaFileTest.kt
+README.md
+CHANGELOG.md
+build.gradle
 ```
 
-## Usage
-
-### Kaalka (local time-based)
-
+## Usage Example
 ```kotlin
-val kaalka = Kaalka()
-val message = "Hello, Kaalka!"
-val timestamp = "10:20:30" // or null for current time
-val encrypted = kaalka.encrypt(message, timestamp)
-val decrypted = kaalka.decrypt(encrypted, timestamp)
+import kaalka.*
+
+fun main() {
+    // Envelope encryption/decryption
+    val sender = "Alice"
+    val receiver = "Bob"
+    val timestamp = KaalkaUtils.utcNow()
+    val plaintext = "Hello, Bob!"
+    val env = KaalkaProtocol.encryptEnvelope(plaintext, sender, receiver, timestamp, 120, 1)
+    val decrypted = KaalkaProtocol.decryptEnvelope(env, receiver, timestamp)
+    println("Decrypted: $decrypted")
+
+    // File chunk encryption/decryption
+    val fileBytes = "This is a test file.".toByteArray()
+    val chunks = KaalkaFile.encryptFileChunks(fileBytes, sender, receiver, timestamp)
+    val outBytes = KaalkaFile.decryptFileChunks(chunks, receiver, timestamp)
+    println("File roundtrip: ${outBytes.toString(Charsets.UTF_8)}")
+}
 ```
 
-### KaalkaNTP (NTP time-based)
-
-```kotlin
-val kaalkaNTP = KaalkaNTP()
-val encrypted = kaalkaNTP.encrypt(message) // uses NTP time
-val decrypted = kaalkaNTP.decrypt(encrypted) // uses NTP time
+## CLI Usage
+```
+kotlin -cp build/libs/kaalka.jar kaalka.KaalkaCLI encrypt --in input.txt --out out.bin --sender Alice --receiver Bob --timestamp 2025-09-06T12:00:00.000Z
+kotlin -cp build/libs/kaalka.jar kaalka.KaalkaCLI decrypt --in out.bin --out output.txt --receiver Bob --timestamp 2025-09-06T12:00:00.000Z
+kotlin -cp build/libs/kaalka.jar kaalka.KaalkaCLI envelope --text "Hello" --sender Alice --receiver Bob
 ```
 
-### File/Media Encryption & Decryption (Lossless)
-
-```kotlin
-val kaalka = Kaalka()
-val imagePath = "test_image.jpg"
-val encryptedFile = "test_image.kaalka"
-val decryptedFile = "test_image_restored.jpg"
-val timestamp = "12:34:56"
-val encSuccess = kaalka.encryptFile(imagePath, encryptedFile, timestamp)
-val decSuccess = kaalka.decryptFile(encryptedFile, decryptedFile, timestamp)
-val origBytes = java.io.File(imagePath).readBytes()
-val decBytes = java.io.File(decryptedFile).readBytes()
-val lossless = origBytes.size == decBytes.size && origBytes.indices.all { origBytes[it] == decBytes[it] }
-println("Lossless restoration: ${if (lossless) "PASS" else "FAIL"}")
+## Testing
+Run all unit tests for complete coverage:
+```
+./gradlew test
 ```
 
-### Packet Example
-
-```kotlin
-val packet = Packet("Hello, Kaalka!")
-packet.sendAndReceiveData()
+## Build Instructions
+To build the JAR:
 ```
-
-## Cross-Platform Compatibility
-
-- Compatible with Python, Dart, Java, and JavaScript Kaalka implementations.
-- Uses the same timestamp-based, angle/trigonometric encryption logic for text, and integer arithmetic for file/media for full interoperability and lossless results.
-
-## Tests
-
-Run all tests (including text, file, binary, extension, error handling, and UDP packet demo) with:
-
+./gradlew build
 ```
-cd C:\Projects\Kaalka-Encryption-Algorithm
-.\gradlew.bat test
-```
+JAR will be in `build/libs/`.
 
-Test output and reports will be available in `kaalka-library/build/reports/tests/`.
+## API Reference
+- `KaalkaProtocol.encryptEnvelope(plaintext, senderId, receiverId, timestamp?)`
+- `KaalkaProtocol.decryptEnvelope(envelope, receiverId, timestamp?)`
+- `KaalkaFile.encryptFileChunks(fileBytes, senderId, receiverId, timestamp?)`
+- `KaalkaFile.decryptFileChunks(chunks, receiverId, timestamp?)`
+- CLI: `KaalkaCLI`
 
-The tests include automated verification of encryption and decryption, including lossless testing of the provided `test_image.jpg`.
-
-## Build JAR
-
-```
-cd C:\Projects\Kaalka-Encryption-Algorithm
-.\gradlew.bat clean build jar
-```
-
-The JAR will be in `build/libs/Kaalka-Encryption-Algorithm-4.0.jar`.
+## Changelog
+See `CHANGELOG.md` for details.

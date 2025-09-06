@@ -1,0 +1,44 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
+}
+
+group 'kaalka'
+version '5.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    testImplementation "org.jetbrains.kotlin:kotlin-test"
+    testImplementation "junit:junit:4.13.2"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'kaalka.KaalkaCLI',
+            'Implementation-Version': '5.0.0',
+            'Implementation-Title': 'Kaalka Encryption Algorithm',
+            'License': 'Custom License: See LICENSE file in repository.'
+        )
+    }
+    archiveBaseName.set('kaalka')
+    archiveVersion.set('5.0.0')
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    sourceCompatibility = "17"
+    targetCompatibility = "17"
+}
