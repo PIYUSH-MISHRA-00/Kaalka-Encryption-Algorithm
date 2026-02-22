@@ -8,6 +8,8 @@
 
 <a href="https://doi.org/10.5281/zenodo.8170382"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.8170382.svg" alt="DOI"></a>
 
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/piyushmishra00)
+
 # <div align="center">Kaalka Encryption Algorithm</div>
 
 <div align="center">
@@ -149,3 +151,4 @@ Developed and maintained by [Piyush Mishra](https://github.com/PIYUSH-MISHRA-00)
 Thanks to contributors across all supported language implementations.
 
 <div align="center"> <b>Time is the Key.</b> </div>
+
