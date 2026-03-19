@@ -8,11 +8,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const monitorHM = document.getElementById('angleHM');
     const monitorMS = document.getElementById('angleMS');
     const monitorTrig = document.getElementById('trigOp');
+    const entropyBar = document.getElementById('entropyBar');
 
     // Kaalka Instance
     const kaalka = new Kaalka();
     let cH = 0, cM = 0, cS = 0;
     let isDragging = false;
+    let lastTime = 0;
 
     // Tabs
     const tabBtns = document.querySelectorAll('.tab-btn');
@@ -63,13 +65,17 @@ document.addEventListener('DOMContentLoaded', () => {
         monitorHM.textContent = `${aHM.toFixed(2)}°`;
         monitorMS.textContent = `${aMS.toFixed(2)}°`;
         
-        // Determine Trig Op based on active angle quadrant (Simplified visualization)
+        // Determine Trig Op based on active angle quadrant
         const q = Math.floor(aHM / 90) + 1;
         const ops = ["SIN", "COS", "TAN", "COT"];
         monitorTrig.textContent = ops[q-1] || "SIN";
+        
+        // Update Entropy Bar
+        const entropy = ((aHM + aMS + aHS) / 1080) * 100;
+        entropyBar.style.width = `${Math.min(100, Math.max(5, entropy))}%`;
     }
 
-    function tick() {
+    function tick(timestamp) {
         drawClock();
         requestAnimationFrame(tick);
     }
@@ -80,21 +86,22 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.save();
         ctx.translate(r, r);
 
-        // Face
+        // Ultra Pro Clock Face
         ctx.beginPath();
         ctx.arc(0, 0, r - 30, 0, 2 * Math.PI);
         ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+        ctx.lineWidth = 1;
         ctx.stroke();
 
-        // High-precision ticks
+        // Dots and Ticks
         for (let i = 0; i < 60; i++) {
             const ang = (i * Math.PI) / 30;
             const isH = i % 5 === 0;
             ctx.rotate(ang);
             ctx.beginPath();
             ctx.moveTo(0, -(r - 35));
-            ctx.lineTo(0, -(r - (isH ? 50 : 40)));
-            ctx.strokeStyle = isH ? '#fff' : '#444';
+            ctx.lineTo(0, -(r - (isH ? 55 : 42)));
+            ctx.strokeStyle = isH ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.15)';
             ctx.lineWidth = isH ? 2 : 1;
             ctx.stroke();
             ctx.rotate(-ang);
@@ -104,17 +111,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const mp = (cM * Math.PI / 30) + (cS * Math.PI / 1800);
         const sp = (cS * Math.PI / 30);
 
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = 'rgba(0,0,0,0.8)';
-
-        dHand(ctx, hp, r * 0.5, 8, '#fff');
-        dHand(ctx, mp, r * 0.75, 5, '#fff');
+        // Hands with Glow
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = 'rgba(0,0,0,1)';
+        
+        dHand(ctx, hp, r * 0.55, 8, '#ffffff'); // Hour
+        dHand(ctx, mp, r * 0.82, 5, '#ffffff');  // Minute
+        
         ctx.shadowBlur = 0;
-        dHand(ctx, sp, r * 0.85, 2, '#6366f1');
+        dHand(ctx, sp, r * 0.88, 2, '#6366f1'); // Second
 
+        // Center hub
         ctx.beginPath();
         ctx.arc(0,0, 6, 0, 2*Math.PI);
         ctx.fillStyle = '#6366f1';
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(0,0, 2, 0, 2*Math.PI);
+        ctx.fillStyle = '#000';
         ctx.fill();
 
         ctx.restore();
@@ -127,19 +141,26 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.lineWidth = w;
         ctx.lineCap = 'round';
         ctx.strokeStyle = color;
-        ctx.moveTo(0, 10);
+        ctx.moveTo(0, 15); // Tail
         ctx.lineTo(0, -len);
         ctx.stroke();
         ctx.restore();
     }
 
     function setupEvents() {
-        syncBtn.addEventListener('click', syncWithSystemTime);
+        syncBtn.addEventListener('click', () => {
+            syncWithSystemTime();
+            // Pulse Effect
+            syncBtn.style.transform = 'scale(0.95)';
+            setTimeout(() => syncBtn.style.transform = 'scale(1)', 100);
+        });
 
         encryptBtn.addEventListener('click', () => {
             if (inputData.value) {
                 const res = kaalka.encrypt(inputData.value);
                 outputData.value = res;
+                inputData.style.borderColor = 'var(--success)';
+                setTimeout(() => inputData.style.borderColor = 'var(--glass-border)', 1000);
             }
         });
 
@@ -153,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Envelope Mode
         document.getElementById('genSundial').addEventListener('click', () => {
             const sd = Kaalka.generateSundial();
-            outputData.value = `Sundial Beacon: ${sd.beacon}\n\n(Secret kept in ephemeral memory)`;
+            outputData.value = `Sundial Beacon:\n${sd.beacon}\n\n[SECRET DATA ENCRYPTED IN BROWSER MEMORY]`;
         });
 
         document.getElementById('sealBtn').addEventListener('click', () => {
@@ -168,10 +189,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('copyBtn').addEventListener('click', () => {
             outputData.select();
             document.execCommand('copy');
+            const icon = document.querySelector('#copyBtn i');
+            icon.setAttribute('data-lucide', 'check');
+            lucide.createIcons();
+            setTimeout(() => {
+                icon.setAttribute('data-lucide', 'copy');
+                lucide.createIcons();
+            }, 2000);
         });
 
-        // Drag
-        canvas.addEventListener('mousedown', () => isDragging = true);
+        // Smooth Drag Interaction
+        canvas.addEventListener('mousedown', (e) => isDragging = true);
         window.addEventListener('mouseup', () => isDragging = false);
         canvas.addEventListener('mousemove', (e) => {
             if (!isDragging) return;
@@ -179,7 +207,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const x = e.clientX - rect.left - canvas.width / 2;
             const y = e.clientY - rect.top - canvas.height / 2;
             const angle = (Math.atan2(y, x) + Math.PI / 2 + 2 * Math.PI) % (2 * Math.PI);
+            
+            // Map angle to minutes
             cM = (angle / (2 * Math.PI)) * 60;
+            // Update hours proportionally for realism
+            cH = (cH % 12) + (cM / 3600); 
+
             updateDisplay();
         });
     }

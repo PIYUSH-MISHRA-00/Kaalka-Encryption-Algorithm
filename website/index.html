@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kaalka | The Geometry of Time</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="ultra-pro">
@@ -26,7 +27,7 @@
     </nav>
 
     <main class="page-container">
-        <header class="hero-section">
+        <header class="hero-section" data-aos="fade-up">
             <div class="status-pill">v5.0.0 Production Ready</div>
             <h1>Time-Driven Security.</h1>
             <p>Experience the future of cross-platform encryption where every second generates a unique cryptographic fingerprint.</p>
@@ -34,7 +35,7 @@
 
         <section class="main-grid">
             <!-- Left Column: Clock & Pulse -->
-            <div class="column-left">
+            <div class="column-left" data-aos="fade-right">
                 <div class="glass-module clock-card">
                     <div class="module-header">
                         <span>Temporal Origin</span>
@@ -49,7 +50,7 @@
                     </div>
                 </div>
 
-                <div class="glass-module monitor-card">
+                <div class="glass-module monitor-card" data-aos="fade-up" data-aos-delay="200">
                     <div class="module-header">
                         <span>Protocol Monitor</span>
                     </div>
@@ -63,19 +64,22 @@
                             <span id="angleMS">0.00°</span>
                         </div>
                         <div class="monitor-item">
-                            <label>Trig Op</label>
+                            <label>Trig Logic</label>
                             <span id="trigOp">SIN/COS</span>
                         </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="entropyBar"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Right Column: Playground -->
-            <div class="column-right">
+            <div class="column-right" data-aos="fade-left">
                 <div class="glass-module playground-card">
                     <div class="mode-tabs">
-                        <button class="tab-btn active" data-mode="basic">Standard</button>
-                        <button class="tab-btn" data-mode="envelope">Envelope</button>
+                        <button class="tab-btn active" data-mode="basic">Standard Mode</button>
+                        <button class="tab-btn" data-mode="envelope">Envelope (Seal)</button>
                     </div>
 
                     <div class="tab-content" id="standardTab">
@@ -92,11 +96,11 @@
                     <div class="tab-content" id="envelopeTab" style="display: none;">
                         <div class="field-group">
                             <label>Recipient Beacon</label>
-                            <input type="text" id="recipientBeacon" placeholder="Paste Sundial Beacon...">
+                            <input type="text" id="recipientBeacon" placeholder="Paste Sundial Beacon (B64)...">
                         </div>
                         <div class="field-group">
                             <label>Message</label>
-                            <textarea id="envInput" placeholder="Secure envelope payload..."></textarea>
+                            <textarea id="envInput" placeholder="Enter the message to be sealed in the envelope..."></textarea>
                         </div>
                         <div class="action-row">
                             <button id="sealBtn" class="pro-btn primary">Seal Envelope</button>
@@ -106,11 +110,31 @@
 
                     <div class="output-area">
                         <div class="output-header">
-                            <label>Result</label>
-                            <button id="copyBtn" class="icon-btn" title="Copy"><i data-lucide="copy"></i></button>
+                            <label>Weave Result</label>
+                            <button id="copyBtn" class="icon-btn" title="Copy Output"><i data-lucide="copy"></i></button>
                         </div>
-                        <textarea id="outputData" readonly placeholder="Output will appear here..."></textarea>
+                        <textarea id="outputData" readonly placeholder="Resulting data will appear here..."></textarea>
                     </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="features-section" data-aos="fade-up">
+            <div class="features-grid">
+                <div class="feature-item">
+                    <i data-lucide="shield-check"></i>
+                    <h3>Zero-Persistence</h3>
+                    <p>Keys are generated on-the-fly from the current timestamp, ensuring no static keys exist to be stolen.</p>
+                </div>
+                <div class="feature-item">
+                    <i data-lucide="zap"></i>
+                    <h3>Cross-Platform</h3>
+                    <p>Identical trigonometric logic across 5+ languages for seamless cross-border communication.</p>
+                </div>
+                <div class="feature-item">
+                    <i data-lucide="layers"></i>
+                    <h3>Layered Integrity</h3>
+                    <p>Envelope and Seal protocol provides canonical protection against tampering and replay attacks.</p>
                 </div>
             </div>
         </section>
@@ -118,12 +142,16 @@
 
     <footer class="pro-footer">
         <div class="footer-content">
-            <p>© 2026 Kaalka Algorithm. Developed by Piyush Mishra.</p>
+            <p>© 2026 Kaalka Encryption Engine. Designed for Performance.</p>
         </div>
     </footer>
 
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="kaalka_web.js"></script>
     <script src="app.js"></script>
-    <script>lucide.createIcons();</script>
+    <script>
+        AOS.init({ duration: 1000, once: true });
+        lucide.createIcons();
+    </script>
 </body>
 </html>
