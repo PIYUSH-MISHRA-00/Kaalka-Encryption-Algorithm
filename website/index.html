@@ -5,52 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kaalka | The Geometry of Time</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="ultra-pro">
-    <div class="dynamic-bg"></div>
-    
+<body class="dark-theme">
     <nav class="pro-nav">
         <div class="nav-content">
             <div class="brand-group">
                 <div class="brand-logo"><i data-lucide="clock"></i></div>
                 <div class="brand-name">KAALKA</div>
             </div>
-            <div class="nav-links">
-                <a href="https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm" target="_blank" class="nav-btn">
-                    Repository <i data-lucide="external-link"></i>
+            <div class="nav-actions">
+                <button id="themeToggle" class="theme-toggle" title="Toggle Theme">
+                    <i data-lucide="moon"></i>
+                </button>
+                <a href="https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm" target="_blank" class="theme-toggle">
+                    <i data-lucide="github"></i>
                 </a>
             </div>
         </div>
     </nav>
 
     <main class="page-container">
-        <header class="hero-section" data-aos="fade-up">
-            <div class="status-pill">v5.0.0 Production Ready</div>
-            <h1>Time-Driven Security.</h1>
-            <p>Experience the future of cross-platform encryption where every second generates a unique cryptographic fingerprint.</p>
+        <header class="hero-section">
+            <h1>Let's Build the <span class="cyan-text">Future</span></h1>
+            <p>High-performance time-driven encryption using the geometric principles of the Kaalka Engine.</p>
         </header>
 
         <section class="main-grid">
-            <!-- Left Column: Clock & Pulse -->
-            <div class="column-left" data-aos="fade-right">
-                <div class="glass-module clock-card">
+            <!-- Left: Clock & Telemetry -->
+            <div class="column-left">
+                <div class="card">
                     <div class="module-header">
                         <span>Temporal Origin</span>
-                        <div class="live-indicator"><span class="pulse"></span> LIVE</div>
                     </div>
                     <div class="clock-wrap">
                         <canvas id="analogClock" width="400" height="400"></canvas>
                         <div id="timeDisplay">00:00:00</div>
-                    </div>
-                    <div class="clock-controls">
-                        <button id="syncBtn" class="pro-btn secondary">Sync System Clock</button>
+                        <button id="syncBtn" class="btn btn-outline">Sync System Clock</button>
                     </div>
                 </div>
 
-                <div class="glass-module monitor-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="card" style="margin-top: 30px;">
                     <div class="module-header">
                         <span>Protocol Monitor</span>
                     </div>
@@ -64,7 +59,7 @@
                             <span id="angleMS">0.00°</span>
                         </div>
                         <div class="monitor-item">
-                            <label>Trig Logic</label>
+                            <label>Trig Engine</label>
                             <span id="trigOp">SIN/COS</span>
                         </div>
                     </div>
@@ -74,70 +69,50 @@
                 </div>
             </div>
 
-            <!-- Right Column: Playground -->
-            <div class="column-right" data-aos="fade-left">
-                <div class="glass-module playground-card">
-                    <div class="mode-tabs">
+            <!-- Right: Playground -->
+            <div class="column-right">
+                <div class="card playground-card">
+                    <div class="tab-btns">
                         <button class="tab-btn active" data-mode="basic">Standard Mode</button>
                         <button class="tab-btn" data-mode="envelope">Envelope (Seal)</button>
                     </div>
 
-                    <div class="tab-content" id="standardTab">
+                    <div id="standardTab" class="tab-pane">
                         <div class="field-group">
-                            <label>Payload</label>
-                            <textarea id="inputData" placeholder="Enter message to weave..."></textarea>
+                            <label>Input Message</label>
+                            <textarea id="inputData" placeholder="Enter message to weave into time..."></textarea>
                         </div>
-                        <div class="action-row">
-                            <button id="encryptBtn" class="pro-btn primary">Encrypt</button>
-                            <button id="decryptBtn" class="pro-btn outline">Decrypt</button>
+                        <div class="btn-group">
+                            <button id="encryptBtn" class="btn btn-primary">Encrypt</button>
+                            <button id="decryptBtn" class="btn btn-outline">Decrypt</button>
                         </div>
                     </div>
 
-                    <div class="tab-content" id="envelopeTab" style="display: none;">
+                    <div id="envelopeTab" class="tab-pane" style="display: none;">
                         <div class="field-group">
                             <label>Recipient Beacon</label>
-                            <input type="text" id="recipientBeacon" placeholder="Paste Sundial Beacon (B64)...">
+                            <input type="text" id="recipientBeacon" placeholder="Paste Sundial Beacon (Base64)...">
                         </div>
                         <div class="field-group">
-                            <label>Message</label>
-                            <textarea id="envInput" placeholder="Enter the message to be sealed in the envelope..."></textarea>
+                            <label>Envelope Payload</label>
+                            <textarea id="envInput" placeholder="Enter message to seal in temporal envelope..."></textarea>
                         </div>
-                        <div class="action-row">
-                            <button id="sealBtn" class="pro-btn primary">Seal Envelope</button>
-                            <button id="genSundial" class="pro-btn secondary">Gen Sundial</button>
+                        <div class="btn-group">
+                            <button id="sealBtn" class="btn btn-primary">Seal Envelope</button>
+                            <button id="genSundial" class="btn btn-outline">Generate Sundial</button>
                         </div>
                     </div>
 
-                    <div class="output-area">
-                        <div class="output-header">
+                    <div class="output-area" style="margin-top: 20px;">
+                        <div class="module-header">
                             <span>Weave Result</span>
                             <button id="copyBtn" class="copy-pill">
-                                <i data-lucide="copy"></i>
-                                <span>Copy</span>
+                                <i data-lucide="copy" class="copy-icon"></i>
+                                <span class="copy-text">Copy</span>
                             </button>
                         </div>
-                        <textarea id="outputData" readonly placeholder="Resulting data will appear here..."></textarea>
+                        <textarea id="outputData" readonly placeholder="Cryptographic result will appear here..."></textarea>
                     </div>
-                </div>
-            </div>
-        </section>
-        
-        <section class="features-section" data-aos="fade-up">
-            <div class="features-grid">
-                <div class="feature-item">
-                    <i data-lucide="shield-check"></i>
-                    <h3>Zero-Persistence</h3>
-                    <p>Keys are generated on-the-fly from the current timestamp, ensuring no static keys exist to be stolen.</p>
-                </div>
-                <div class="feature-item">
-                    <i data-lucide="zap"></i>
-                    <h3>Cross-Platform</h3>
-                    <p>Identical trigonometric logic across 5+ languages for seamless cross-border communication.</p>
-                </div>
-                <div class="feature-item">
-                    <i data-lucide="layers"></i>
-                    <h3>Layered Integrity</h3>
-                    <p>Envelope and Seal protocol provides canonical protection against tampering and replay attacks.</p>
                 </div>
             </div>
         </section>
@@ -149,12 +124,7 @@
         </div>
     </footer>
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="kaalka_web.js"></script>
     <script src="app.js"></script>
-    <script>
-        AOS.init({ duration: 1000, once: true });
-        lucide.createIcons();
-    </script>
 </body>
 </html>

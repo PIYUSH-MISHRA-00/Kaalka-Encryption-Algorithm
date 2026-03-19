@@ -10,11 +10,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const monitorTrig = document.getElementById('trigOp');
     const entropyBar = document.getElementById('entropyBar');
 
+    // Theme Toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem('kaalka-theme') || 'dark';
+    setTheme(savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        setTheme(currentTheme);
+    });
+
+    function setTheme(theme) {
+        body.setAttribute('data-theme', theme);
+        localStorage.setItem('kaalka-theme', theme);
+        const icon = themeToggle.querySelector('[data-lucide]');
+        icon.setAttribute('data-lucide', theme === 'light' ? 'moon' : 'sun');
+        if (window.lucide) lucide.createIcons();
+    }
+
     // Kaalka Instance
     const kaalka = new Kaalka();
     let cH = 0, cM = 0, cS = 0;
     let isDragging = false;
-    let lastTime = 0;
+    let activeHand = null;
 
     // Tabs
     const tabBtns = document.querySelectorAll('.tab-btn');
@@ -33,13 +54,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const inputData = document.getElementById('inputData');
     const outputData = document.getElementById('outputData');
-    const outputArea = document.querySelector('.output-area');
     const encryptBtn = document.getElementById('encryptBtn');
     const decryptBtn = document.getElementById('decryptBtn');
 
     function init() {
         syncWithSystemTime();
         setupEvents();
+        if (window.lucide) lucide.createIcons();
         requestAnimationFrame(tick);
     }
 
@@ -66,17 +87,15 @@ document.addEventListener('DOMContentLoaded', () => {
         monitorHM.textContent = `${aHM.toFixed(2)}°`;
         monitorMS.textContent = `${aMS.toFixed(2)}°`;
         
-        // Determine Trig Op based on active angle quadrant
         const q = Math.floor(aHM / 90) + 1;
         const ops = ["SIN", "COS", "TAN", "COT"];
         monitorTrig.textContent = ops[q-1] || "SIN";
         
-        // Update Entropy Bar
         const entropy = ((aHM + aMS + aHS) / 1080) * 100;
         entropyBar.style.width = `${Math.min(100, Math.max(5, entropy))}%`;
     }
 
-    function tick(timestamp) {
+    function tick() {
         drawClock();
         requestAnimationFrame(tick);
     }
@@ -87,23 +106,23 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.save();
         ctx.translate(r, r);
 
-        // Ultra Pro Clock Face
+        // Minimalist Face
         ctx.beginPath();
         ctx.arc(0, 0, r - 30, 0, 2 * Math.PI);
-        ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+        const isLight = body.getAttribute('data-theme') === 'light';
+        ctx.strokeStyle = isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)';
         ctx.lineWidth = 1;
         ctx.stroke();
 
-        // Dots and Ticks
-        for (let i = 0; i < 60; i++) {
-            const ang = (i * Math.PI) / 30;
-            const isH = i % 5 === 0;
+        // Ticks
+        for (let i = 0; i < 12; i++) {
+            const ang = (i * Math.PI) / 6;
             ctx.rotate(ang);
             ctx.beginPath();
             ctx.moveTo(0, -(r - 35));
-            ctx.lineTo(0, -(r - (isH ? 55 : 42)));
-            ctx.strokeStyle = isH ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.15)';
-            ctx.lineWidth = isH ? 2 : 1;
+            ctx.lineTo(0, -(r - 50));
+            ctx.strokeStyle = isLight ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.2)';
+            ctx.lineWidth = 2;
             ctx.stroke();
             ctx.rotate(-ang);
         }
@@ -111,25 +130,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const hp = (cH * Math.PI / 6) + (cM * Math.PI / 360);
         const mp = (cM * Math.PI / 30) + (cS * Math.PI / 1800);
         const sp = (cS * Math.PI / 30);
-
-        // Hands with Glow
-        ctx.shadowBlur = 20;
-        ctx.shadowColor = 'rgba(0,0,0,1)';
         
-        dHand(ctx, hp, r * 0.55, 8, '#ffffff'); // Hour
-        dHand(ctx, mp, r * 0.82, 5, '#ffffff');  // Minute
-        
-        ctx.shadowBlur = 0;
-        dHand(ctx, sp, r * 0.88, 2, '#6366f1'); // Second
+        const handColor = isLight ? '#171717' : '#EDEDED';
+        const accentColor = '#06B6D4';
 
-        // Center hub
+        dHand(ctx, hp, r * 0.5, 8, handColor); // Hour
+        dHand(ctx, mp, r * 0.75, 5, handColor); // Minute
+        dHand(ctx, sp, r * 0.85, 2, accentColor); // Second
+
         ctx.beginPath();
-        ctx.arc(0,0, 6, 0, 2*Math.PI);
-        ctx.fillStyle = '#6366f1';
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(0,0, 2, 0, 2*Math.PI);
-        ctx.fillStyle = '#000';
+        ctx.arc(0, 0, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = accentColor;
         ctx.fill();
 
         ctx.restore();
@@ -142,14 +153,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.lineWidth = w;
         ctx.lineCap = 'round';
         ctx.strokeStyle = color;
-        ctx.moveTo(0, 15); // Tail
+        ctx.moveTo(0, 10);
         ctx.lineTo(0, -len);
         ctx.stroke();
         ctx.restore();
     }
-
-    // Precise Hand Selection Logic
-    let activeHand = null; // 'H', 'M', or 'S'
 
     function getAngle(x, y) {
         return (Math.atan2(y, x) + Math.PI / 2 + 2 * Math.PI) % (2 * Math.PI);
@@ -158,30 +166,33 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupEvents() {
         syncBtn.addEventListener('click', () => {
             syncWithSystemTime();
-            syncBtn.style.transform = 'scale(0.95)';
-            setTimeout(() => syncBtn.style.transform = 'scale(1)', 100);
         });
 
         encryptBtn.addEventListener('click', () => {
-            if (inputData.value) {
-                const res = kaalka.encrypt(inputData.value);
-                outputData.value = res;
-                outputArea.style.borderColor = 'var(--success)';
-                setTimeout(() => outputArea.style.borderColor = 'var(--glass-border)', 1500);
+            const data = inputData.value.trim();
+            if (data) {
+                try {
+                    const res = kaalka.encrypt(data);
+                    outputData.value = res;
+                } catch (e) {
+                    outputData.value = "Encryption failed.";
+                }
+            } else {
+                outputData.value = "Please enter data to encrypt.";
             }
         });
 
         decryptBtn.addEventListener('click', () => {
-            if (inputData.value) {
-                const res = kaalka.decrypt(inputData.value);
+            const data = inputData.value.trim();
+            if (data) {
+                const res = kaalka.decrypt(data);
                 outputData.value = res;
             }
         });
 
-        // Envelope Mode
         document.getElementById('genSundial').addEventListener('click', () => {
             const sd = Kaalka.generateSundial();
-            outputData.value = `Sundial Beacon:\n${sd.beacon}\n\n[SECRET DATA ENCRYPTED IN BROWSER MEMORY]`;
+            outputData.value = `Beacon: ${sd.beacon}`;
         });
 
         document.getElementById('sealBtn').addEventListener('click', () => {
@@ -193,56 +204,54 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        document.getElementById('copyBtn').addEventListener('click', () => {
-            outputData.select();
-            document.execCommand('copy');
+        // Portfolio Style Copy Button
+        const copyBtn = document.getElementById('copyBtn');
+        copyBtn.addEventListener('click', () => {
+            if (!outputData.value) return;
             
-            const btn = document.getElementById('copyBtn');
-            const icon = btn.querySelector('i');
-            const label = btn.querySelector('span');
-            
-            const originalIcon = icon.getAttribute('data-lucide');
-            const originalText = label.textContent;
-            
-            icon.setAttribute('data-lucide', 'check');
-            label.textContent = 'Copied!';
-            btn.classList.add('success');
-            lucide.createIcons();
-            
-            setTimeout(() => {
-                icon.setAttribute('data-lucide', originalIcon);
-                label.textContent = originalText;
-                btn.classList.remove('success');
-                lucide.createIcons();
-            }, 2000);
+            navigator.clipboard.writeText(outputData.value).then(() => {
+                const icon = copyBtn.querySelector('[data-lucide]');
+                const text = copyBtn.querySelector('.copy-text');
+                
+                const originalIcon = icon.getAttribute('data-lucide');
+                const originalText = text.textContent;
+
+                // Success State
+                icon.setAttribute('data-lucide', 'check');
+                text.textContent = 'Copied!';
+                copyBtn.classList.add('success');
+                if (window.lucide) lucide.createIcons();
+
+                setTimeout(() => {
+                    icon.setAttribute('data-lucide', originalIcon);
+                    text.textContent = originalText;
+                    copyBtn.classList.remove('success');
+                    if (window.lucide) lucide.createIcons();
+                }, 2000);
+            });
         });
 
-        // Advanced Drag Interaction
+        // Interaction
         canvas.addEventListener('mousedown', (e) => {
             const rect = canvas.getBoundingClientRect();
             const x = e.clientX - rect.left - canvas.width / 2;
             const y = e.clientY - rect.top - canvas.height / 2;
             const clickAngle = getAngle(x, y);
 
-            // Determine which hand is closest to the click angle
-            const hp = (cH * Math.PI / 6) + (cM * Math.PI / 360);
-            const mp = (cM * Math.PI / 30) + (cS * Math.PI / 1800);
-            const sp = (cS * Math.PI / 30);
+            const hp = (cH * Math.PI / 6) % (2 * Math.PI);
+            const mp = (cM * Math.PI / 30) % (2 * Math.PI);
+            const sp = (cS * Math.PI / 30) % (2 * Math.PI);
 
-            const diffH = Math.abs(clickAngle - hp % (2 * Math.PI));
-            const diffM = Math.abs(clickAngle - mp % (2 * Math.PI));
-            const diffS = Math.abs(clickAngle - sp % (2 * Math.PI));
+            const dh = Math.abs(clickAngle - hp);
+            const dm = Math.abs(clickAngle - mp);
+            const ds = Math.abs(clickAngle - sp);
 
-            const minDiff = Math.min(diffH, diffM, diffS);
-            if (minDiff < 0.3) { // Proximity threshold
+            const min = Math.min(dh, dm, ds);
+            if (min < 0.4) {
                 isDragging = true;
-                if (minDiff === diffS) activeHand = 'S';
-                else if (minDiff === diffM) activeHand = 'M';
+                if (min === ds) activeHand = 'S';
+                else if (min === dm) activeHand = 'M';
                 else activeHand = 'H';
-            } else {
-                // Fallback to Minute if not close to any specific hand (legacy behavior)
-                isDragging = true;
-                activeHand = 'M';
             }
         });
 
@@ -258,14 +267,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const y = e.clientY - rect.top - canvas.height / 2;
             const angle = getAngle(x, y);
 
-            if (activeHand === 'S') {
-                cS = (angle / (2 * Math.PI)) * 60;
-            } else if (activeHand === 'M') {
-                cM = (angle / (2 * Math.PI)) * 60;
-                cH = (Math.floor(cH)) + (cM / 60); // Drift hour slightly
-            } else if (activeHand === 'H') {
-                cH = (angle / (2 * Math.PI)) * 12;
-            }
+            if (activeHand === 'S') cS = (angle / (2 * Math.PI)) * 60;
+            else if (activeHand === 'M') cM = (angle / (2 * Math.PI)) * 60;
+            else if (activeHand === 'H') cH = (angle / (2 * Math.PI)) * 12;
 
             updateDisplay();
         });
