@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaalka — Time-Driven Encryption</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="apple-standard">
+    <nav class="glass-nav">
+        <div class="nav-content">
+            <div class="brand">Kaalka</div>
+            <div class="links">
+                <a href="https://github.com/PIYUSH-MISHRA-00/Kaalka-Encryption-Algorithm" target="_blank" class="apple-link">
+                    <i data-lucide="arrow-up-right"></i> GitHub
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="content">
+        <header class="pro-hero">
+            <div class="badge">Experimental Protocol</div>
+            <h1>Time is the Key.</h1>
+            <p>A precision encryption system that maps the geometry of time to the security of data.</p>
+        </header>
+
+        <section class="clock-display">
+            <div class="clock-face-container">
+                <canvas id="analogClock" width="400" height="400"></canvas>
+                <div class="digital-time" id="timeDisplay">00:00:00</div>
+            </div>
+            <div class="clock-actions">
+                <button id="syncBtn" class="apple-btn apple-btn-secondary">
+                    <i data-lucide="rotate-ccw"></i> Sync System Time
+                </button>
+            </div>
+        </section>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" data-mode="basic">Basic Encryption</button>
+            <button class="mode-btn" data-mode="envelope">Advanced Envelope</button>
+        </div>
+
+        <section class="playground glass-card">
+            <div id="basicMode">
+                <div class="input-stack">
+                    <label>Input</label>
+                    <textarea id="inputData" placeholder="Plaintext or Ciphertext..."></textarea>
+                </div>
+                <div class="button-row">
+                    <button id="encryptBtn" class="apple-btn apple-btn-primary">Encrypt</button>
+                    <button id="decryptBtn" class="apple-btn apple-btn-outline">Decrypt</button>
+                </div>
+            </div>
+
+            <div id="envelopeMode" style="display: none;">
+                <div class="input-stack">
+                    <label>Sundial Beacon (Recipient)</label>
+                    <input type="text" id="recipientBeacon" placeholder="Paste beacon here...">
+                </div>
+                <div class="input-stack">
+                    <label>Message</label>
+                    <textarea id="envInput" placeholder="Enter message to seal..."></textarea>
+                </div>
+                <div class="button-row">
+                    <button id="sealBtn" class="apple-btn apple-btn-primary">Seal Envelope</button>
+                    <button id="genSundial" class="apple-btn apple-btn-secondary">Generate Sundial</button>
+                </div>
+            </div>
+
+            <div class="output-stack">
+                <label>Output</label>
+                <div class="copy-container">
+                    <textarea id="outputData" readonly></textarea>
+                    <button id="copyBtn" class="copy-fab"><i data-lucide="copy"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <section class="details-grid">
+            <div class="detail-card">
+                <h3>Temporal Geometry</h3>
+                <p>Every second, a unique key space is mapped using trigonometric functions derived from clock hand angles.</p>
+            </div>
+            <div class="detail-card">
+                <h3>Native Cross-Platform</h3>
+                <p>Identical logic across Python, Dart, Java, Kotlin, and JavaScript ensures seamless data Weaving.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="apple-footer">
+        <div class="separator"></div>
+        <p>Designed by Piyush Mishra. Built with precision.</p>
+    </footer>
+
+    <script src="kaalka_web.js"></script>
+    <script src="app.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
