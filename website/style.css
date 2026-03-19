@@ -173,7 +173,7 @@ h1, h2, h3, .brand-name {
 
 /* Forms */
 .field-group {
-    margin-bottom: 24px;
+    margin-bottom: 32px;
 }
 
 .field-group label {
@@ -207,7 +207,7 @@ textarea { min-height: 120px; resize: none; }
 .btn-group {
     display: flex;
     gap: 12px;
-    margin-bottom: 24px;
+    margin-bottom: 0; /* Margin handled by output-area top margin */
 }
 
 .btn {
@@ -239,18 +239,13 @@ textarea { min-height: 120px; resize: none; }
     border-color: var(--text-secondary);
 }
 
-/* Copy Pill (Portfolio Style) */
-.copy-pill {
-    background: var(--card-bg);
+/* Results Area */
+.output-area {
+    margin-top: 32px;
+    background: var(--input-bg);
     border: 1px solid var(--border);
-    padding: 8px 16px;
-    border-radius: 99px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: var(--text-primary);
+    border-radius: 20px;
+    padding: 24px;
 }
 
 .copy-pill:hover {

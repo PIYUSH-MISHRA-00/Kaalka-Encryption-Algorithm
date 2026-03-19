@@ -217,13 +217,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 const originalText = text.textContent;
 
                 // Success State
-                icon.setAttribute('data-lucide', 'check');
+                const currentIcon = copyBtn.querySelector('[data-lucide]');
+                currentIcon.setAttribute('data-lucide', 'check');
                 text.textContent = 'Copied!';
                 copyBtn.classList.add('success');
                 if (window.lucide) lucide.createIcons();
 
                 setTimeout(() => {
-                    icon.setAttribute('data-lucide', originalIcon);
+                    const newIcon = copyBtn.querySelector('[data-lucide]');
+                    newIcon.setAttribute('data-lucide', originalIcon);
                     text.textContent = originalText;
                     copyBtn.classList.remove('success');
                     if (window.lucide) lucide.createIcons();
