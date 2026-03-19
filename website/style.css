@@ -280,6 +280,87 @@ textarea:focus, input:focus { outline: none; border-color: var(--accent); backgr
 .outline { background: transparent; border: 1.5px solid var(--glass-border); color: #fff; }
 .outline:hover { border-color: var(--accent); color: var(--accent); }
 
+/* Results Section Refinement */
+.output-area {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid var(--glass-border);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.output-area:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.15);
+}
+
+.output-header label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    color: var(--accent);
+}
+
+#outputData {
+    background: transparent;
+    border: none;
+    padding: 10px 0;
+    font-family: 'Fira Code', 'SF Mono', monospace;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-main);
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) transparent;
+}
+
+.icon-btn i {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.2s;
+}
+
+.icon-btn:hover i {
+    transform: scale(1.15);
+    color: var(--accent);
+}
+
+/* Footer Refinement */
+.pro-footer {
+    border-top: 1px solid var(--glass-border);
+    padding: 80px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.footer-content {
+    max-width: 800px;
+    text-align: center;
+}
+
+.footer-content p {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+    line-height: 1.8;
+}
+
+.footer-content p::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 2px;
+    background: var(--accent);
+    margin: 20px auto 0;
+    border-radius: 2px;
+    opacity: 0.5;
+}
+
 /* Features Section */
 .features-section { max-width: 1200px; margin: 0 auto 100px; padding: 0 40px; }
 .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }

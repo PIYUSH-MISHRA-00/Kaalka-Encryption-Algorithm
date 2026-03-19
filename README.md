@@ -13,7 +13,7 @@
 # <div align="center">Kaalka Encryption Algorithm</div>
 <p align="center">
   <a href="https://PIYUSH-MISHRA-00.github.io/Kaalka-Encryption-Algorithm/" target="_blank">
-    <b>🌐 Live Website (Ultra Pro)</b>
+    <b>🌐 Live Website</b>
   </a>
 </p>
 

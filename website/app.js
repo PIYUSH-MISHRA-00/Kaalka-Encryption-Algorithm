@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const inputData = document.getElementById('inputData');
     const outputData = document.getElementById('outputData');
+    const outputArea = document.querySelector('.output-area');
     const encryptBtn = document.getElementById('encryptBtn');
     const decryptBtn = document.getElementById('decryptBtn');
 
@@ -147,10 +148,16 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.restore();
     }
 
+    // Precise Hand Selection Logic
+    let activeHand = null; // 'H', 'M', or 'S'
+
+    function getAngle(x, y) {
+        return (Math.atan2(y, x) + Math.PI / 2 + 2 * Math.PI) % (2 * Math.PI);
+    }
+
     function setupEvents() {
         syncBtn.addEventListener('click', () => {
             syncWithSystemTime();
-            // Pulse Effect
             syncBtn.style.transform = 'scale(0.95)';
             setTimeout(() => syncBtn.style.transform = 'scale(1)', 100);
         });
@@ -159,8 +166,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (inputData.value) {
                 const res = kaalka.encrypt(inputData.value);
                 outputData.value = res;
-                inputData.style.borderColor = 'var(--success)';
-                setTimeout(() => inputData.style.borderColor = 'var(--glass-border)', 1000);
+                outputArea.style.borderColor = 'var(--success)';
+                setTimeout(() => outputArea.style.borderColor = 'var(--glass-border)', 1500);
             }
         });
 
@@ -192,26 +199,64 @@ document.addEventListener('DOMContentLoaded', () => {
             const icon = document.querySelector('#copyBtn i');
             icon.setAttribute('data-lucide', 'check');
             lucide.createIcons();
+            const originalColor = icon.style.color;
+            icon.style.color = 'var(--success)';
             setTimeout(() => {
                 icon.setAttribute('data-lucide', 'copy');
+                icon.style.color = originalColor;
                 lucide.createIcons();
             }, 2000);
         });
 
-        // Smooth Drag Interaction
-        canvas.addEventListener('mousedown', (e) => isDragging = true);
-        window.addEventListener('mouseup', () => isDragging = false);
+        // Advanced Drag Interaction
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left - canvas.width / 2;
+            const y = e.clientY - rect.top - canvas.height / 2;
+            const clickAngle = getAngle(x, y);
+
+            // Determine which hand is closest to the click angle
+            const hp = (cH * Math.PI / 6) + (cM * Math.PI / 360);
+            const mp = (cM * Math.PI / 30) + (cS * Math.PI / 1800);
+            const sp = (cS * Math.PI / 30);
+
+            const diffH = Math.abs(clickAngle - hp % (2 * Math.PI));
+            const diffM = Math.abs(clickAngle - mp % (2 * Math.PI));
+            const diffS = Math.abs(clickAngle - sp % (2 * Math.PI));
+
+            const minDiff = Math.min(diffH, diffM, diffS);
+            if (minDiff < 0.3) { // Proximity threshold
+                isDragging = true;
+                if (minDiff === diffS) activeHand = 'S';
+                else if (minDiff === diffM) activeHand = 'M';
+                else activeHand = 'H';
+            } else {
+                // Fallback to Minute if not close to any specific hand (legacy behavior)
+                isDragging = true;
+                activeHand = 'M';
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            activeHand = null;
+        });
+
         canvas.addEventListener('mousemove', (e) => {
             if (!isDragging) return;
             const rect = canvas.getBoundingClientRect();
             const x = e.clientX - rect.left - canvas.width / 2;
             const y = e.clientY - rect.top - canvas.height / 2;
-            const angle = (Math.atan2(y, x) + Math.PI / 2 + 2 * Math.PI) % (2 * Math.PI);
-            
-            // Map angle to minutes
-            cM = (angle / (2 * Math.PI)) * 60;
-            // Update hours proportionally for realism
-            cH = (cH % 12) + (cM / 3600); 
+            const angle = getAngle(x, y);
+
+            if (activeHand === 'S') {
+                cS = (angle / (2 * Math.PI)) * 60;
+            } else if (activeHand === 'M') {
+                cM = (angle / (2 * Math.PI)) * 60;
+                cH = (Math.floor(cH)) + (cM / 60); // Drift hour slightly
+            } else if (activeHand === 'H') {
+                cH = (angle / (2 * Math.PI)) * 12;
+            }
 
             updateDisplay();
         });
