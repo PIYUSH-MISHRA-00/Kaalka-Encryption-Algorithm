@@ -295,12 +295,39 @@ textarea:focus, input:focus { outline: none; border-color: var(--accent); backgr
     box-shadow: 0 0 30px rgba(99, 102, 241, 0.15);
 }
 
-.output-header label {
-    font-family: 'Inter', sans-serif;
-    font-weight: 700;
-    font-size: 0.8rem;
-    letter-spacing: 1px;
+.output-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.copy-pill {
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.3);
     color: var(--accent);
+    padding: 6px 12px;
+    border-radius: 99px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.copy-pill:hover {
+    background: var(--accent);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.copy-pill:active {
+    transform: translateY(0);
 }
 
 #outputData {
@@ -311,6 +338,8 @@ textarea:focus, input:focus { outline: none; border-color: var(--accent); backgr
     font-size: 0.95rem;
     line-height: 1.6;
     color: var(--text-main);
+    width: 100%;
+    min-height: 120px;
     scrollbar-width: thin;
     scrollbar-color: var(--accent) transparent;
 }

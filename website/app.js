@@ -196,14 +196,23 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('copyBtn').addEventListener('click', () => {
             outputData.select();
             document.execCommand('copy');
-            const icon = document.querySelector('#copyBtn i');
+            
+            const btn = document.getElementById('copyBtn');
+            const icon = btn.querySelector('i');
+            const label = btn.querySelector('span');
+            
+            const originalIcon = icon.getAttribute('data-lucide');
+            const originalText = label.textContent;
+            
             icon.setAttribute('data-lucide', 'check');
+            label.textContent = 'Copied!';
+            btn.classList.add('success');
             lucide.createIcons();
-            const originalColor = icon.style.color;
-            icon.style.color = 'var(--success)';
+            
             setTimeout(() => {
-                icon.setAttribute('data-lucide', 'copy');
-                icon.style.color = originalColor;
+                icon.setAttribute('data-lucide', originalIcon);
+                label.textContent = originalText;
+                btn.classList.remove('success');
                 lucide.createIcons();
             }, 2000);
         });
